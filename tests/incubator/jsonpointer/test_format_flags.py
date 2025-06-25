@@ -6,6 +6,7 @@ from killerbunny.incubator.jsonpointer.pretty_printer import FormatFlags, format
     _is_empty_or_single_item, _pp_list, \
     _pp_dict, pretty_print
 
+# unittest uses (expected, actual) in asserts whereas pytest uses (actual, expected) to my eternal confusion
 
 class TestFormatFlags(unittest.TestCase):
     def test_as_json_format(self) -> None:
@@ -302,27 +303,32 @@ class TestPPList(unittest.TestCase):
     def test_empty_list(self) -> None:
         lines = [""]
         _pp_list([], FormatFlags(), lines)
-        self.assertEqual(lines, ["[ ]"])
+        expected = ["[ ]"]
+        self.assertEqual(expected,lines )
 
     def test_single_scalar_list(self) -> None:
         lines = [""]
         _pp_list([1], FormatFlags(), lines)
-        self.assertEqual(lines, ["[ 1 ]"])
+        expected = ["[ 1 ]"]
+        self.assertEqual(expected, lines)
 
     def test_multi_scalar_list(self) -> None:
         lines = [""]
-        _pp_list([1, 2, 3], FormatFlags(), lines)
-        self.assertEqual(["[", "1, ", "2, ", "3", "]"], lines)
+        _pp_list([1, 2, 3], FormatFlags().with_single_line(True), lines)
+        expected = ['[', ' 1,', ' 2,', ' 3', ' ]']
+        self.assertEqual(expected, lines)
 
     def test_nested_list(self) -> None:
         lines = [""]
         _pp_list([[1, 2], [3, 4]], FormatFlags(), lines)
-        self.assertEqual(["[ [", "1, ", "2", "], ", "[", "3, ", "4", ']', ']'], lines)
+        expected = ['[ [', ' 1,', ' 2', ' ],', ' [', ' 3,', ' 4', ' ]', ' ]']
+        self.assertEqual(expected, lines)
 
     def test_nested_dict_list(self) -> None:
         lines = [""]
         _pp_list([{"key1": "value1"}, {"key2": "value2"}], FormatFlags(), lines)
-        self.assertEqual(['[ { key1: value1 }, ', '{ key2: value2 }', ']'], lines)
+        expected = ['[ { key1: value1 },', ' { key2: value2 }', ' ]']
+        self.assertEqual(expected, lines)
 
     def test_complex_list(self) -> None:
         data: list[JSON_VALUES] = [
@@ -332,91 +338,116 @@ class TestPPList(unittest.TestCase):
             4
         ]
         lines = [""]
-        _pp_list(data, FormatFlags(), lines)
-        self.assertEqual(lines,
-                         ["[", "  1,", "  [", "    2,", "    3", "  ],", "  {", "    key1: value1,", "    key2: value2",
-                          "  },", "  4", "]"])
+        _pp_list(data, FormatFlags().with_single_line(False), lines)
+        expected = ["[", "  1,", "  [", "    2,", "    3", "  ],", "  {", "    key1: value1,", "    key2: value2",
+                    "  },", "  4", "]"]
+        self.assertEqual( expected, lines)
 
     def test_single_line_list(self) -> None:
         lines = [""]
         _pp_list([1, 2, 3], FormatFlags().with_single_line(True), lines)
-        self.assertEqual(lines, ['[', ' 1,', ' 2,', ' 3', ' ]'])
+        expected = ['[', ' 1,', ' 2,', ' 3', ' ]']
+        self.assertEqual(expected,lines )
 
     def test_single_item_list_in_list(self) -> None:
         lines = [""]
         _pp_list([[1]], FormatFlags(), lines)
-        self.assertEqual(lines, ["[", "  [ 1 ]", "]"])
+        expected = ['[ [ 1 ] ]']
+        self.assertEqual(expected, lines )
 
     def test_single_item_dict_in_list(self) -> None:
         lines = [""]
         _pp_list([{"key": "value"}], FormatFlags(), lines)
-        self.assertEqual(lines, ["[", "  { key: value }", "]"])
+        expected =['[ { key: value } ]']
+        self.assertEqual(expected, lines )
 
     def test_single_item_nested_list_in_list(self) -> None:
         lines = [""]
         _pp_list([[[1]]], FormatFlags(), lines)
-        self.assertEqual(lines, ['[ [ [ 1 ] ] ]'])
+        expected = ['[ [ [ 1 ] ] ]']
+        self.assertEqual(expected, lines )
 
     def test_single_item_nested_dict_in_list(self) -> None:
         lines = [""]
         _pp_list([[{"key": "value"}]], FormatFlags(), lines)
-        self.assertEqual(lines, ["[", "  [", "    { key: value }", "  ]", "]"])
+        expected = ['[ [ { key: value } ] ]']
+        self.assertEqual(expected, lines )
 
     def test_single_item_nested_dict_in_list_2(self) -> None:
         lines = [""]
         _pp_list([{"key": [1]}], FormatFlags(), lines)
-        self.assertEqual(lines, ["[", "  { key: [ 1 ] }", "]"])
+        expected = ['[ {', ' key: [ 1 ] } ]']
+        self.assertEqual(expected, lines )
 
     def test_single_item_nested_dict_in_list_3(self) -> None:
         lines = [""]
         _pp_list([{"key": {"subkey": "value"}}], FormatFlags(), lines)
-        self.assertEqual(lines, ["[", "  { key: ", "  { subkey: value }", "  }", "]"])
+        expected = ['[ {', ' key: { subkey: value } } ]']
+        self.assertEqual(expected, lines )
 
     def test_single_item_nested_dict_in_list_4(self) -> None:
         lines = [""]
         _pp_list([{"key": {"subkey": [1]}}], FormatFlags(), lines)
-        self.assertEqual(lines, ["[", "  { key: ", "  { subkey: [ 1 ] }", "  }", "]"])
+        expected = ['[ {', ' key:', ' {', ' subkey: [ 1 ] } } ]']
+        self.assertEqual(expected, lines )
 
     def test_single_item_nested_dict_in_list_5(self) -> None:
         lines = [""]
         _pp_list([{"key": {"subkey": [{"subsubkey": "value"}]}}], FormatFlags(), lines)
-        self.assertEqual(lines,
-                         ["[", "  { key: ", "  { subkey: ", "  [", "    { subsubkey: value }", "  ]", "  }", "  }",
-                          "]"])
+        expected = ['[ {', ' key:', ' {', ' subkey: [ { subsubkey: value } ] } } ]']
+        self.assertEqual(expected, lines )
 
     def test_single_item_nested_dict_in_list_6(self) -> None:
         lines = [""]
         _pp_list([{"key": {"subkey": [{"subsubkey": [1]}]}}], FormatFlags(), lines)
-        self.assertEqual(lines, ["[", "  { key: ", "  { subkey: ", "  [", "    [ 1 ]", "  ]", "  }", "  }", "]"])
+        expected = ['[ {', ' key:', ' {', ' subkey: [ {', ' subsubkey: [ 1 ] } ] } } ]']
+        self.assertEqual(expected, lines )
 
     def test_single_item_nested_dict_in_list_7(self) -> None:
         lines = [""]
         _pp_list([{"key": {"subkey": [{"subsubkey": [{"subsubsubkey": "value"}]}]}}], FormatFlags(), lines)
-        self.assertEqual(lines,
-                         ["[", "  { key: ", "  { subkey: ", "  [", "    [", "      { subsubsubkey: value }", "    ]",
-                          "  ]", "  }", "  }", "]"])
+        expected = ['[ {',
+                    ' key:',
+                    ' {',
+                    ' subkey: [ {',
+                    ' subsubkey: [ { subsubsubkey: value } ] } ] } } ]']
+        self.assertEqual(expected, lines )
 
     def test_single_item_nested_dict_in_list_8(self) -> None:
         lines = [""]
         _pp_list([{"key": {"subkey": [{"subsubkey": [{"subsubsubkey": [1]}]}]}}], FormatFlags(), lines)
-        self.assertEqual(lines,
-                         ["[", "  { key: ", "  { subkey: ", "  [", "    [", "      [ 1 ]", "    ]", "  ]", "  }", "  }",
-                          "]"])
+        expected =['[ {',
+                   ' key:',
+                   ' {',
+                   ' subkey: [ {',
+                   ' subsubkey: [ {',
+                   ' subsubsubkey: [ 1 ] } ] } ] } } ]']
+        self.assertEqual(expected, lines )
 
     def test_single_item_nested_dict_in_list_9(self) -> None:
         lines = [""]
         _pp_list([{"key": {"subkey": [{"subsubkey": [{"subsubsubkey": [{"subsubsubsubkey": "value"}]}]}]}}],
                  FormatFlags(), lines)
-        self.assertEqual(lines, ["[", "  { key: ", "  { subkey: ", "  [", "    [", "      [",
-                                 "        { subsubsubsubkey: value }", "      ]", "    ]", "  ]", "  }", "  }", "]"])
+        expected =['[ {',
+                   ' key:',
+                   ' {',
+                   ' subkey: [ {',
+                   ' subsubkey: [ {',
+                   ' subsubsubkey: [ { subsubsubsubkey: value } ] } ] } ] } } ]']
+        self.assertEqual(expected, lines )
 
     def test_single_item_nested_dict_in_list_10(self) -> None:
         lines = [""]
         _pp_list([{"key": {"subkey": [{"subsubkey": [{"subsubsubkey": [{"subsubsubsubkey": [1]}]}]}]}}], FormatFlags(),
                  lines)
-        self.assertEqual(lines,
-                         ["[", "  { key: ", "  { subkey: ", "  [", "    [", "      [", "        [ 1 ]", "      ]",
-                          "    ]", "  ]", "  }", "  }", "]"])
+        expected = ['[ {',
+                    ' key:',
+                    ' {',
+                    ' subkey: [ {',
+                    ' subsubkey: [ {',
+                    ' subsubsubkey: [ {',
+                    ' subsubsubsubkey: [ 1 ] } ] } ] } ] } } ]']
+        self.assertEqual(expected, lines)
 
 
 class TestPrettyPrint2(unittest.TestCase):
