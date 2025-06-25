@@ -21,12 +21,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” 
 
 """
 import json
-import operator
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
-
-import pytest
 
 from killerbunny.shared.constants import UTF8, ONE_MEBIBYTE
 from killerbunny.shared.json_type_defs import JSON_ValueType

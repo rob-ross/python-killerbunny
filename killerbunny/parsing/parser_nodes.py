@@ -9,7 +9,6 @@
 import logging
 from typing import Iterator, TYPE_CHECKING, override
 
-from killerbunny.evaluating.value_nodes import VNodeList
 from killerbunny.lexing.tokens import Token, TokenType
 from killerbunny.parsing.node_type import ASTNodeType, ASTNode
 from killerbunny.parsing.terminal_nodes import RootNode, CurrentNodeIdentifier

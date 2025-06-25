@@ -11,11 +11,11 @@ These are nodes used to return query results from the evaluator. They are distin
 """
 import json
 import logging
-from typing import Iterator, Generator, override, TypeAlias
+from typing import Iterator, Generator, override
 
 from killerbunny.evaluating.evaluator_types import EvaluatorValue, NormalizedJPath
-from killerbunny.shared.json_type_defs import JSON_ValueType
 from killerbunny.parsing.helper import unescape_string_content
+from killerbunny.shared.json_type_defs import JSON_ValueType
 
 _logger = logging.getLogger(__name__)
 

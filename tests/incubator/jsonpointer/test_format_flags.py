@@ -1,11 +1,11 @@
 
 import unittest
 
+from killerbunny.incubator.jsonpointer.constants import JSON_VALUES
+from killerbunny.incubator.jsonpointer.pretty_printer import FormatFlags, format_scalar, _spacer, \
+    _is_empty_or_single_item, _pp_list, \
+    _pp_dict, pretty_print
 
-
-from killerbunny.incubator.jsonpointer.constants import JSON_SCALARS, SCALAR_TYPES, JSON_VALUES
-from killerbunny.incubator.jsonpointer.pretty_printer import FormatFlags, format_scalar, _spacer, _is_empty_or_single_item, _pp_dict, _pp_list, \
-    pretty_print, _pp_dict, pretty_print
 
 class TestFormatFlags(unittest.TestCase):
     def test_as_json_format(self) -> None:
