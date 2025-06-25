@@ -1,0 +1,74 @@
+common classes (categories) of tokens in compiler/interpreter design:
+
+1. **Operators**
+   - Arithmetic operators (+, -, *, /, %)
+   - Relational operators (<, >, <=, >=, ==, !=)
+   - Logical operators (&&, ||, !)
+   - Assignment operators (=, +=, -=, etc.)
+   - Bitwise operators (&, |, ^, ~, <<, >>)
+
+1. **Unary Operators** (one operand)
+    - Unary plus (+x)
+    - Unary minus (-x)
+    - Logical NOT (!)
+    - Bitwise NOT (~)
+    - Increment (++x or x++)
+    - Decrement (--x or x--)
+
+2. **Binary Operators** (two operands)
+    - Addition (x + y)
+    - Subtraction (x - y)
+    - Multiplication (x * y)
+    - Division (x / y)
+    - etc.
+
+3. **Ternary Operators** (three operands)
+    - Conditional operator (x ? y : z)
+
+
+
+2. **Delimiters/Punctuators**
+   - Parentheses ( )
+   - Brackets [ ]
+   - Braces { }
+   - Comma ,
+   - Semicolon ;
+   - Period .
+   - Colon :
+
+3. **Literals**
+   - Numeric literals (integers, floating-point)
+   - String literals ("hello")
+   - Character literals ('a')
+   - Boolean literals (true, false)
+   - Null/nil literals
+
+4. **Identifiers**
+   - Variable names
+   - Function names
+   - Class names
+   - Module names
+
+5. **Keywords**
+   - Control flow (if, else, while, for, return)
+   - Type declarations (int, float, class, struct)
+   - Access modifiers (public, private, protected)
+   - Other reserved words (const, static, void)
+
+6. **Comments**
+   - Single-line comments
+   - Multi-line comments
+   - Documentation comments
+
+7. **Whitespace**
+   - Spaces
+   - Tabs
+   - Newlines
+   - (Some languages ignore these, others make them significant)
+
+8. **Special Tokens**
+   - End-of-file marker
+   - Error tokens (for invalid input)
+   - Line continuation markers
+
+These categories help organize the lexical analysis phase and make the parsing phase more structured. Different programming languages might combine or subdivide these categories differently, but these represent the most common token classifications in compiler design.

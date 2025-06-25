@@ -1,0 +1,36 @@
+Remaining Tasks 6/24/2025
+
+1. Unit tests for
+    A. Lexer
+    B. Parser
+    C. Evaluator (covered by test_cts.py)
+    Note: need to refactor Lexer & Parser test data into json data for standardization
+
+
+2. Cycle detection in Pretty Printer
+
+3. Migrate code out of incubator
+    A. Create separate IDEA project
+    B. Update new project and existing Wordspy project with new pip live library install
+    C.
+
+4. Set up files to create GitHub project
+
+5. Upload project to GitHub
+
+6. Research other jpath query implementations for API ideas
+
+7. Implement a top-level API for the evaluator
+
+8. publicize project
+    A. LinkedIn
+    B. Wiktionary Extract
+    C. Wiktionary page
+    D.
+
+9. I-regexp checking
+    A. research I-regexp for python
+    B. build regex filter for checking arguments to match() and search(), maybe we can convert I-Regexp to Python Pattern
+    C. User should be able to supply the re package of their choice, re, regex, others.
+
+

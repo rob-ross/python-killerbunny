@@ -1,0 +1,66 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env/
+ENV/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+wheels/
+sdist/
+
+# Pytest cache
+.pytest_cache/
+
+# Coverage reports
+.coverage
+.coverage.*
+htmlcov/
+htmlReport/
+coverage.xml
+
+# IDEs / Editors
+### IntelliJ IDEA ###
+out/
+.idea/          # JetBrains IDEs (PyCharm, IntelliJ)
+.iml
+.vscode/        # Visual Studio Code (can sometimes share launch.json/settings.json if desired)
+*.sublime-*     # Sublime Text
+nbproject/      # NetBeans
+*.swp           # Vim swap files
+*~              # Backup files (common convention)
+
+# Operating System files
+.DS_Store       # macOS
+Thumbs.db       # Windows
+
+
+# Secrets (use with caution, prefer dedicated secret management)
+# (add patterns for specific secret files if necessary)
+# credentials.json
+# secrets.yaml
+*.key
+*.pem
+credentials.*
+secrets.*
+*.env         # If used for secrets
+
+# Log files
+*.log
+logs/
+
+
+# local data and config home directory
+wordspy_home/
+
+

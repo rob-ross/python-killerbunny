@@ -1,0 +1,6 @@
+# file_name: table_06.jpath_ast
+$[*]  :  ${CS{bs[*]/bs}/CS}/$
+$.o[*]  :  ${CS{bs[ns:o]/bs}/CS, CS{bs[*]/bs}/CS}/$
+$.o[*]  :  ${CS{bs[ns:o]/bs}/CS, CS{bs[*]/bs}/CS}/$
+$.o[*, *]  :  ${CS{bs[ns:o]/bs}/CS, CS{bs[*, *]/bs}/CS}/$
+$.a[*]  :  ${CS{bs[ns:a]/bs}/CS, CS{bs[*]/bs}/CS}/$

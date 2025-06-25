@@ -1,0 +1,13 @@
+$.store.book[*].author
+$..author
+$.store.*
+$.store..price
+$..book[2]
+$..book[2].author
+$..book[2].publisher
+$..book[-1]
+$..book[0,1]
+$..book[:2]
+$..book[?@.isbn]
+$..book[?@.price<10]
+$..*

@@ -1,0 +1,6 @@
+# file_name: table_05.jpath_ast
+$.o['j j']  :  ${CS{bs[ns:o]/bs}/CS, CS{bs[ns:j j]/bs}/CS}/$
+$.o['j j']['k.k']  :  ${CS{bs[ns:o]/bs}/CS, CS{bs[ns:j j]/bs}/CS, CS{bs[ns:k.k]/bs}/CS}/$
+$.o["j j"]["k.k"]  :  ${CS{bs[ns:o]/bs}/CS, CS{bs[ns:j j]/bs}/CS, CS{bs[ns:k.k]/bs}/CS}/$
+$['o']['j j']['k.k']  :  ${CS{bs[ns:o]/bs}/CS, CS{bs[ns:j j]/bs}/CS, CS{bs[ns:k.k]/bs}/CS}/$
+$["'"]["@"]  :  ${CS{bs[ns:']/bs}/CS, CS{bs[ns:@]/bs}/CS}/$

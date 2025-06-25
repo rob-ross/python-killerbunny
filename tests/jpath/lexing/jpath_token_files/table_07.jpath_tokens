@@ -1,0 +1,3 @@
+# file_name: table_07.jpath_tokens
+$[1]  :  DOLLAR, LBRACKET, INT:1, RBRACKET, EOF
+$[-2]  :  DOLLAR, LBRACKET, INT:-2, RBRACKET, EOF

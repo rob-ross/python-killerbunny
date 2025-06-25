@@ -1,0 +1,6 @@
+# file_name: table_05.jpath_tokens
+$.o['j j']  :  DOLLAR, DOT, ID:o, LBRACKET, STRING:'j j', RBRACKET, EOF
+$.o['j j']['k.k']  :  DOLLAR, DOT, ID:o, LBRACKET, STRING:'j j', RBRACKET, LBRACKET, STRING:'k.k', RBRACKET, EOF
+$.o["j j"]["k.k"]  :  DOLLAR, DOT, ID:o, LBRACKET, STRING:"j j", RBRACKET, LBRACKET, STRING:"k.k", RBRACKET, EOF
+$['o']['j j']['k.k']  :  DOLLAR, LBRACKET, STRING:'o', RBRACKET, LBRACKET, STRING:'j j', RBRACKET, LBRACKET, STRING:'k.k', RBRACKET, EOF
+$["'"]["@"]  :  DOLLAR, LBRACKET, STRING:"'", RBRACKET, LBRACKET, STRING:"@", RBRACKET, EOF

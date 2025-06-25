@@ -1,0 +1,80 @@
+{
+  "word": "\\\\o//",
+  "pos": "symbol",
+  "lang": "Translingual",
+  "lang_code": "mul",
+  "head_templates": [
+    {
+      "name": "head",
+      "args": {
+        "1": "mul",
+        "2": "symbol",
+        "nolinkhead": "",
+        "head": "\\\\o//",
+        "head2": "",
+        "head3": "",
+        "head4": "",
+        "sc": "Zsym",
+        "sort": "",
+        "cat2": "",
+        "3": "",
+        "4": "",
+        "f1nolink": "",
+        "f1lang": "en",
+        "5": "or",
+        "6": "",
+        "f2nolink": "",
+        "f2lang": "en",
+        "7": "or",
+        "8": "",
+        "f3nolink": "",
+        "f3lang": "en",
+        "9": "or",
+        "10": "",
+        "f4nolink": "",
+        "f4lang": "en"
+      },
+      "expansion": "\\\\o//"
+    },
+    {
+      "name": "mul-symbol",
+      "args": {
+        "head": "\\\\o//"
+      },
+      "expansion": "\\\\o//"
+    }
+  ],
+  "senses": [
+    {
+      "links": [
+        [
+          "\\o/",
+          "\\o/#Translingual"
+        ]
+      ],
+      "glosses": [
+        "Alternative form of \\o/"
+      ],
+      "tags": [
+        "alt-of",
+        "alternative"
+      ],
+      "alt_of": [
+        {
+          "word": "\\o/"
+        }
+      ],
+      "categories": [
+        "Pages with 1 entry",
+        "Pages with entries",
+        "Translingual emoticons",
+        "Translingual entries with incorrect language header",
+        "Translingual lemmas",
+        "Translingual symbols",
+        "Translingual terms spelled with /",
+        "Translingual terms spelled with \\",
+        "Translingual terms with non-redundant manual script codes"
+      ]
+    }
+  ]
+}

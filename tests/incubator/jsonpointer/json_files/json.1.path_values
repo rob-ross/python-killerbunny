@@ -1,0 +1,12 @@
+""  :  { "name": "John Doe", "age": 30, "address": { "street": "123 Main St", "city": "Anytown", "zip": "12345" }, "phoneNumbers": [ "555-123-4567", "555-987-6543" ] }
+/  :  { "name": "John Doe", "age": 30, "address": { "street": "123 Main St", "city": "Anytown", "zip": "12345" },"phoneNumbers": [ "555-123-4567", "555-987-6543" ] }
+/name  :  "John Doe"
+/age  :  30
+/address  :  { "street": "123 Main St", "city": "Anytown", "zip": "12345" }
+/address/street  :  "123 Main St"
+/address/city  :  "Anytown"
+/address/zip  :  "12345"
+/phoneNumbers  :  [ "555-123-4567", "555-987-6543" ]
+/phoneNumbers/0  :  "555-123-4567"
+/phoneNumbers/1  :  "555-987-6543"
+/phoneNumbers/-  :  2

@@ -1,0 +1,11 @@
+""  :  [ "one", 2, "buckle my shoe", 3.4, "shut the door", true, null, false, null ]
+/0  :  "one"
+/1  :  2
+/2  :  "buckle my shoe"
+/3  :  3.4
+/4  :  "shut the door"
+/5  :  true
+/6  :  null
+/7  :  false
+/8  :  null
+/-  :  9

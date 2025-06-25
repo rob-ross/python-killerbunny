@@ -1,0 +1,29 @@
+# file_name: table_11.jpath_ast
+$.absent1 == $.absent2  :  Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got == at position 11: $.absent1 ^==^ $.absent2
+$.absent1 <= $.absent2  :  Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got <= at position 11: $.absent1 ^<=^ $.absent2
+$.absent == 'g'  :  Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got == at position 10: $.absent ^==^ 'g'
+$.absent1 != $.absent2  :  Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got != at position 11: $.absent1 ^!=^ $.absent2
+$.absent != 'g'  :  Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got != at position 10: $.absent ^!=^ 'g'
+1 <= 2  :  Invalid Syntax: start: Expected '$', got INT at position 1: ^1^ <= 2
+1> 2  :  Invalid Syntax: start: Expected '$', got INT at position 1: ^1^> 2
+13 == '13'  :  Invalid Syntax: start: Expected '$', got INT at position 1: ^13^ == '13'
+'a' <= 'b'  :  Invalid Syntax: start: Expected '$', got STRING at position 1: ^'a'^ <= 'b'
+'a' > 'b'  :  Invalid Syntax: start: Expected '$', got STRING at position 1: ^'a'^ > 'b'
+$.obj == $.arr  :  Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got == at position 7: $.obj ^==^ $.arr
+$.obj != $.arr  :  Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got != at position 7: $.obj ^!=^ $.arr
+$.obj == $.obj  :  Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got == at position 7: $.obj ^==^ $.obj
+$.obj != $.obj  :  Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got != at position 7: $.obj ^!=^ $.obj
+$.arr == $.arr  :  Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got == at position 7: $.arr ^==^ $.arr
+$.arr != $.arr  :  Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got != at position 7: $.arr ^!=^ $.arr
+$.obj == 17  :  Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got == at position 7: $.obj ^==^ 17
+$.obj != 17  :  Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got != at position 7: $.obj ^!=^ 17
+$.obj <= $.arr  :  Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got <= at position 7: $.obj ^<=^ $.arr
+$.obj < $.arr  :  Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got < at position 7: $.obj ^<^ $.arr
+$.obj <= $.obj  :  Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got <= at position 7: $.obj ^<=^ $.obj
+$.arr <= $.arr  :  Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got <= at position 7: $.arr ^<=^ $.arr
+1 <= $.arr  :  Invalid Syntax: start: Expected '$', got INT at position 1: ^1^ <= $.arr
+1 >= $.arr  :  Invalid Syntax: start: Expected '$', got INT at position 1: ^1^ >= $.arr
+1 > $.arr  :  Invalid Syntax: start: Expected '$', got INT at position 1: ^1^ > $.arr
+1 < $.arr  :  Invalid Syntax: start: Expected '$', got INT at position 1: ^1^ < $.arr
+true <= true  :  Invalid Syntax: start: Expected '$', got true at position 1: ^true^ <= true
+true > true  :  Invalid Syntax: start: Expected '$', got true at position 1: ^true^ > true

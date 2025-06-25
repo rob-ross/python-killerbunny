@@ -1,0 +1,15 @@
+# file_name: table_14.jpath_tokens
+$[?length(@) < 3]  :  DOLLAR, LBRACKET, QMARK, ID:length, LPAREN, AT, RPAREN, LT, INT:3, RBRACKET, EOF
+$[?length(@.*) < 3]  :  DOLLAR, LBRACKET, QMARK, ID:length, LPAREN, AT, DOT, STAR, RPAREN, LT, INT:3, RBRACKET, EOF
+$[?count(@.*) == 1]  :  DOLLAR, LBRACKET, QMARK, ID:count, LPAREN, AT, DOT, STAR, RPAREN, EQUAL, INT:1, RBRACKET, EOF
+$[?count(1) == 1]  :  DOLLAR, LBRACKET, QMARK, ID:count, LPAREN, INT:1, RPAREN, EQUAL, INT:1, RBRACKET, EOF
+$[?count(foo(@.*)) == 1]  :  DOLLAR, LBRACKET, QMARK, ID:count, LPAREN, ID:foo, LPAREN, AT, DOT, STAR, RPAREN, RPAREN, EQUAL, INT:1, RBRACKET, EOF
+$[?match(@.timezone, 'Europe/.*')]  :  DOLLAR, LBRACKET, QMARK, ID:match, LPAREN, AT, DOT, ID:timezone, COMMA, STRING:'Europe/.*', RPAREN, RBRACKET, EOF
+$[?match(@.timezone,'Europe/.*') == true]  :  DOLLAR, LBRACKET, QMARK, ID:match, LPAREN, AT, DOT, ID:timezone, COMMA, STRING:'Europe/.*', RPAREN, EQUAL, KEYWORD:true, RBRACKET, EOF
+$[?value(@..color) == "red"]  :  DOLLAR, LBRACKET, QMARK, ID:value, LPAREN, AT, DOUBLE_DOT, ID:color, RPAREN, EQUAL, STRING:"red", RBRACKET, EOF
+$[?value(@..color)]  :  DOLLAR, LBRACKET, QMARK, ID:value, LPAREN, AT, DOUBLE_DOT, ID:color, RPAREN, RBRACKET, EOF
+$[?bar(@.a)]  :  DOLLAR, LBRACKET, QMARK, ID:bar, LPAREN, AT, DOT, ID:a, RPAREN, RBRACKET, EOF
+$[?bnl(@.*)]  :  DOLLAR, LBRACKET, QMARK, ID:bnl, LPAREN, AT, DOT, STAR, RPAREN, RBRACKET, EOF
+$[?blt(1==1)]  :  DOLLAR, LBRACKET, QMARK, ID:blt, LPAREN, INT:1, EQUAL, INT:1, RPAREN, RBRACKET, EOF
+$[?blt(1)]  :  DOLLAR, LBRACKET, QMARK, ID:blt, LPAREN, INT:1, RPAREN, RBRACKET, EOF
+$[?bal(1)]  :  DOLLAR, LBRACKET, QMARK, ID:bal, LPAREN, INT:1, RPAREN, RBRACKET, EOF

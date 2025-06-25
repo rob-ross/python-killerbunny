@@ -1,0 +1,69 @@
+Accepted conventions and style guidelines (like those inspired by PEP 8) for preferred method order for standard
+class methods (dunder/magic methods) and other method types:
+
+1.  Class-level attributes: Constants, default values.
+2.  `__slots__`: If used.
+3.  `__init__`: The constructor is almost always the first method.
+4.  `__new__`: If you're customizing instance creation (less common than `__init__`), it typically comes before `__init__`.
+
+Properties (@property getters, and their associated @*.setter and @*.deleter methods).•The setter (@property_name.setter)
+and deleter (@property_name.deleter) for a specific property are typically grouped immediately after the getter (@property).
+
+5.  `@classmethod` and `@staticmethod` factory methods: Methods that create instances of the class (e.g., `from_string(...)`, `default()`). These are often placed near the top after `__init__` or grouped with other class/static methods.
+6.  `__repr__`: The "official" string representation, primarily for developers.
+7.  `__str__`: The "informal" or user-friendly string representation. (Conventionally, `__repr__` comes before `__str__` if both are present).
+8.  `__format__`: For custom string formatting via `format()`.
+9.  Comparison methods:
+    *   `__eq__(self, other)`
+    *   `__ne__(self, other)`
+    *   `__lt__(self, other)`
+    *   `__le__(self, other)`
+    *   `__gt__(self, other)`
+    *   `__ge__(self, other)`
+10. `__hash__(self)`: If `__eq__` is implemented and the object is intended to be hashable (e.g., for use as a dictionary key).
+11. `__bool__(self)`: To define the truthiness of an object.
+12. Container/Collection methods (if the class emulates a container):
+    *   `__len__(self)`
+    *   `__getitem__(self, key)`
+    *   `__setitem__(self, key, value)`
+    *   `__delitem__(self, key)`
+    *   `__iter__(self)`
+    *   `__reversed__(self)`
+    *   `__contains__(self, item)`
+13. Numeric methods (if the class emulates a numeric type):
+    *   Unary: `__neg__`, `__pos__`, `__abs__`, `__invert__`
+    *   Arithmetic: `__add__`, `__sub__`, `__mul__`, `__matmul__`, `__truediv__`, `__floordiv__`, `__mod__`, `__divmod__`, `__pow__`
+    *   Reflected arithmetic: `__radd__`, `__rsub__`, etc.
+    *   In-place arithmetic: `__iadd__`, `__isub__`, etc.
+    *   Type conversion: `__int__`, `__float__`, `__complex__`, `__index__`
+14. Attribute access methods:
+    *   `__getattr__(self, name)`
+    *   `__getattribute__(self, name)` (use with caution)
+    *   `__setattr__(self, name, value)`
+    *   `__delattr__(self, name)`
+    *   `__dir__(self)`
+15. Descriptor protocol methods (if the class is a descriptor):
+    *   `__get__(self, instance, owner)`
+    *   `__set__(self, instance, value)`
+    *   `__delete__(self, instance)`
+16. Callable methods (if the class instances are meant to be called like functions):
+    *   `__call__(self, *args, **kwargs)`
+17. Context manager methods (for `with` statements):
+    *   `__enter__(self)`
+    *   `__exit__(self, exc_type, exc_val, exc_tb)`
+18. Asynchronous methods (if applicable):
+    *   `__await__`, `__aiter__`, `__anext__`, `__aenter__`, `__aexit__`
+19. `__del__`: The destructor (use sparingly and with caution).
+20. Public methods: Your class's main interface, often grouped by functionality.
+21. "Protected" methods (conventionally prefixed with a single underscore, e.g., `_helper_method`): Internal implementation details intended for use within the class or its subclasses.
+22. "Private" methods (conventionally prefixed with a double underscore, e.g., `__internal_calculation`): Methods subject to name mangling, strongly discouraging external use.
+
+Rationale for this Ordering:
+*   Lifecycle First: `__init__`, `__new__`, `__del__` relate to the object's creation and destruction.
+*   Core Representations: `__repr__` and `__str__` are fundamental for how an object presents itself.
+*   Comparisons and Hashing: These are often related and define object identity and equivalence.
+*   Emulation of Built-in Types: Grouping methods that make your class behave like a container, number, etc.
+*   Interface vs. Implementation: Public methods define the API, while protected/private methods are internal.
+
+Key Takeaway: Consistency is King
+While the above is a good general guideline, the most important thing is consistency within your project or team. If your project has an established style, follow it. If not, adopting a logical order like the one above can significantly improve code readability.

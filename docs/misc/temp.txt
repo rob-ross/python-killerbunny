@@ -1,0 +1,45 @@
+
+
+JPathInterpreter/
+└── tests/
+    __init__.py
+    utils.py
+    └── incubator/
+        └── json/
+            __init__.py
+            test_json_pointer.py
+    └── json_files/
+        └── json.1.json
+            json.1.path_values.txt
+
+JPathInterpreter/
+└──  incubator/
+     __init__.py
+     └── json/
+         __init__.py
+         json_pointer.py
+         constants.py
+
+U+251C
+
+Also, how do I make the symbol that looks like "|__" but only uses one character?
+
+answer: "box-drawing character", "lower left corner", or "corner" character:
+U+2514, \u2514
+The Unicode standard includes a whole set of characters specifically designed
+for drawing boxes and lines.  These are called box-drawing characters.
+They are in the Unicode block called "Box Drawing" (U+2500–U+257F).
+• U+250C (┌):  BOX DRAWINGS LIGHT DOWN AND RIGHT (upper left corner)
+• U+2510 (┐):  BOX DRAWINGS LIGHT DOWN AND LEFT (upper right corner)
+• U+2514 (└):  BOX DRAWINGS LIGHT UP AND RIGHT (lower left corner)
+• U+2518 (┘):  BOX DRAWINGS LIGHT UP AND LEFT (lower right corner)
+
+Other Related Characters:In addition to the corners, there are many other box-drawing characters for:
+•Horizontal Lines:•U+2500 (─): BOX DRAWINGS LIGHT HORIZONTAL
+•U+2501 (━): BOX DRAWINGS HEAVY HORIZONTAL•Vertical Lines:
+•U+2502 (│): BOX DRAWINGS LIGHT VERTICAL•U+2503 (┃): BOX DRAWINGS HEAVY VERTICAL•T-Junctions:
+•U+251C (├): BOX DRAWINGS LIGHT VERTICAL AND RIGHT
+•U+2524 (┤): BOX DRAWINGS LIGHT VERTICAL AND LEFT
+•U+252C (┬): BOX DRAWINGS LIGHT DOWN AND HORIZONTAL
+•U+2534 (┴): BOX DRAWINGS LIGHT UP AND HORIZONTAL•Crossings:
+•**U+253C (┼):

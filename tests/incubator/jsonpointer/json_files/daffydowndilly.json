@@ -1,0 +1,52 @@
+{
+  "word": "daffydowndilly",
+  "pos": "noun",
+  "lang": "English",
+  "lang_code": "en",
+  "head_templates": [
+    {
+      "name": "en-noun",
+      "args": {},
+      "expansion": "daffydowndilly (plural daffydowndillies)"
+    }
+  ],
+  "forms": [
+    {
+      "form": "daffydowndillies",
+      "tags": [
+        "plural"
+      ]
+    }
+  ],
+  "senses": [
+    {
+      "links": [
+        [
+          "daffadowndilly",
+          "daffadowndilly#English"
+        ]
+      ],
+      "glosses": [
+        "Alternative form of daffadowndilly"
+      ],
+      "tags": [
+        "alt-of",
+        "alternative",
+        "abbreviation"
+      ],
+      "alt_of": [
+        {
+          "word": "daffadowndilly"
+        }
+      ],
+      "categories": [
+        "English countable nouns",
+        "English entries with incorrect language header",
+        "English lemmas",
+        "English nouns",
+        "Pages with 1 entry",
+        "Pages with entries"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+Testing Env Dependencies:
+pytest
+
+
+
+To install package from src in dev mode, first activate the desired python env:
+
+1. conda activate <your_environment_name>, e.g., conda activate WordSpy
+
+Then navigate in the terminal to the root of this project (python-killerbunny, where pyproject.toml is) and
+
+2. pip install -e .
+

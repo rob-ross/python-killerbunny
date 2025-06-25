@@ -1,0 +1,3 @@
+# file_name: table_07.jpath_ast
+$[1]  :  ${CS{bs[is:1]/bs}/CS}/$
+$[-2]  :  ${CS{bs[is:-2]/bs}/CS}/$

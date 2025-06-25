@@ -1,0 +1,6 @@
+# file_name: table_09.jpath_ast
+$[1:3]  :  ${CS{bs[slice(1:3:)]/bs}/CS}/$
+$[5:]  :  ${CS{bs[slice(5::)]/bs}/CS}/$
+$[1:5:2]  :  ${CS{bs[slice(1:5:2)]/bs}/CS}/$
+$[5:1:-2]  :  ${CS{bs[slice(5:1:-2)]/bs}/CS}/$
+$[::-1]  :  ${CS{bs[slice(::-1)]/bs}/CS}/$

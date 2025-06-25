@@ -1,0 +1,103 @@
+Core Idea: Tracking Visited Object InstancesThe fundamental approach is to keep track of the actual JSON object/array instances you've already encountered during a specific traversal operation. If you encounter the exact same instance again while still "inside" its own processing path, you've found a cycle.Implementation Strategy within the Evaluator:This logic would primarily reside in the parts of your evaluator that handle deep traversals, most notably the descendant segment (..).1.Identify Traversal Operations: The main place this is needed is in your SegmentNode._eval_descendant_node_impl method (or a helper function it calls). The .. operator can potentially visit every node in a subtree.2.Use Python's id() for Instance Tracking: Python's built-in id(obj) function returns a unique integer for each live object. This is perfect for identifying if you're seeing the exact same instance of a list or dictionary again.3.Maintain a visited_ids Set per Traversal Context:•When you start processing a descendant segment for a particular input_node from the input_nodelist, you'll initiate a traversal (e.g., a breadth-first or depth-first collection of the input node and its descendants).•For this specific traversal operation, maintain a set (let's call it visited_ids_in_current_descent).•Before processing the children of a JSON object or array:•Get its id(): current_id = id(current_json_container).•Check if current_id is in visited_ids_in_current_descent.•If yes: You've detected a cycle. Log a warning, and do not proceed to traverse its children. This breaks the infinite loop for this path.•If no: Add current_id to visited_ids_in_current_descent before you start processing/recursing into its children.•Backtracking (Important for Correctness): After you've finished processing all children of current_json_container (i.e., when the recursion unwinds or you move to the next item at the same level in a breadth-first search), you should remove current_id from visited_ids_in_current_descent. This is crucial because an object might be legitimately reachable via two different non-cyclic paths. You only want to detect cycles where an object is an ancestor of itself in the current active traversal path.4.Maximum Depth Limit (Failsafe):•In addition to cycle detection, implement a maximum traversal depth. This acts as a failsafe for extremely deep (but not necessarily cyclic) structures or if the cycle detection somehow has a bug.•Pass a current_depth parameter during your traversal. If current_depth exceeds a predefined MAX_DEPTH, stop traversing that branch and log a warning.5.Breadth-First Traversal for Descendants: The RFC 9535 (Section 2.5.2.2) states for descendant segments: "nodes are visited before their descendants." This implies a breadth-first collection of nodes.Revised SegmentNode._eval_descendant_node_impl and Helper:Your current SegmentNode._eval_descendant_node_impl passes the input_nodelist directly to selector.eval(). For descendant semantics, you first need to collect the input node itself and all its unique descendants, and then apply the selectors to this collected list.Here's a conceptual sketch of how you might modify it:
+
+# In your parser_nodes.py, within the SegmentNode class
+
+# Helper method to collect an input node and all its unique descendants
+# using breadth-first traversal with cycle and depth protection.
+def _collect_node_and_its_descendants(
+    self,
+    initial_node_to_scan: JSON_VALUE,
+    max_depth: int = 32  # Configurable: A reasonable default
+) -> list[JSON_VALUE]:
+
+    collected_nodes_output: list[JSON_VALUE] = []
+    # Tracks object IDs already added to collected_nodes_output to ensure uniqueness
+    ids_in_collected_output: set[int] = set()
+
+    # Queue for breadth-first traversal: (json_node_instance, current_processing_depth)
+    queue: list[tuple[JSON_VALUE, int]] = [(initial_node_to_scan, 0)]
+
+    # Set to track object IDs visited in the *current expansion path* to detect cycles
+    # This set is effectively managed by the BFS queue structure implicitly for simple cycles,
+    # but an explicit set for `visited_on_path` would be needed for more complex DFS.
+    # For BFS, checking `ids_in_collected_output` before adding to queue can prevent re-processing known branches.
+
+    head = 0
+    while head < len(queue):
+        current_json_node, depth = queue[head]
+        head += 1 # Dequeue
+
+        current_node_id = id(current_json_node)
+
+        # Add to the final list if it's a unique instance
+        if current_node_id not in ids_in_collected_output:
+            collected_nodes_output.append(current_json_node)
+            ids_in_collected_output.add(current_node_id)
+        else:
+            # We've already processed this exact node instance and its children via another path
+            # or it was the initial node. For BFS, this means we don't need to add its children again.
+            # This also implicitly handles simple cycles for BFS if we only add children of new nodes.
+            pass # Continue to next item in queue
+
+        # If max depth reached for this path, don't explore its children
+        if depth >= max_depth:
+            _logger.warning(
+                f"Max traversal depth ({max_depth}) reached while collecting descendants of an input node. "
+                f"Stopping further descent for this branch. ASTNode: {str(current_json_node)[:100]}"
+            )
+            continue
+
+        # If it's a compound type, add its children to the queue for processing
+        if isinstance(current_json_node, JSON_ARRAY_TYPES):
+            for item in current_json_node:
+                # Add child to queue. Cycle detection for adding to queue is implicitly handled
+                # by only fully processing unique items from the queue (via ids_in_collected_output).
+                # A more explicit check before adding to queue: if id(item) in ids_in_collected_output and item is compound,
+                # it might indicate a more complex cycle or shared structure already explored.
+                queue.append((item, depth + 1))
+        elif isinstance(current_json_node, JSON_OBJECT_TYPES):
+            obj_dict = cast(JSON_OBJECT, current_json_node)
+            for value in obj_dict.values():
+                queue.append((value, depth + 1))
+
+    return collected_nodes_output
+
+def _eval_descendant_node_impl(self, input_nodelist: list[Any]) -> list[Any] | None:
+    """
+    RFC 9535 Section 2.5.2.2. (page 13)
+    A descendant segment produces zero or more descendants of an input value.
+    For each node in the input nodelist, a descendant selector visits the input node
+    and each of its descendants such that:
+        • nodes of any array are visited in array order, and
+        • nodes are visited before their descendants.
+    The nodelist resulting from these visits is the result of the descendant segment.
+    This means selectors are applied to the collection of (input_node + its descendants).
+    """
+    overall_results_from_selectors: list[Any] = []
+
+    for node_from_input_list in input_nodelist:
+        # For each node from the input, collect it and all its unique descendants.
+        # This collection process handles cycle detection and depth limits.
+        nodes_to_pass_to_selectors = self._collect_node_and_its_descendants(
+            node_from_input_list
+            # Consider making max_depth configurable, perhaps via Context
+        )
+
+        # Apply all selectors associated with this descendant segment
+        # to the collected list of (node_from_input_list + its descendants).
+        for sel_node in self._selectors.nodes:
+            selector = cast(SelectorNode, sel_node)
+            # The selector.eval() method operates on the fully collected list.
+            # It should not need to do its own descent.
+            current_selector_results = selector.eval(nodes_to_pass_to_selectors)
+            if current_selector_results is not None:
+                overall_results_from_selectors.extend(current_selector_results)
+
+    # Per RFC 2.2, a nodelist may contain duplicate values.
+    # Uniqueness is typically handled by the overall query semantics or specific functions,
+    # not necessarily at each segment's output aggregation.
+    self._input_nodelist = input_nodelist # Save original input to this segment
+    self._output_nodelist = overall_results_from_selectors
+    return self._output_nodelist
+
+Key Changes and Considerations:1._collect_node_and_its_descendants Helper:•This new method is responsible for taking a single JSON node and returning a list containing that node and all its unique descendants.•It uses a breadth-first search (BFS) strategy with a queue to ensure "nodes are visited before their descendants."•Cycle Prevention during Collection: It uses ids_in_collected_output to ensure that each unique object instance is added to collected_nodes_output only once and its children are enqueued for exploration only once. This implicitly handles cycles for BFS because you won't re-explore children of an already fully processed node.•Max Depth: It incorporates a max_depth check.2._eval_descendant_node_impl Usage:•It iterates through each node_from_input_list.•For each, it calls _collect_node_and_its_descendants to get the comprehensive list of nodes (the original input node + its descendants) that the segment's selectors should operate on.•It then passes this collected list to each selector.eval() method.3.Selector eval Methods:•The eval methods of your individual SelectorNode subclasses (like NameSelectorNode, WildcardSelectorNode, etc.) will now receive a list that could potentially contain many nodes (the result of the .. expansion). They should iterate through this list and apply their specific selection logic to each item. They generally should not perform their own recursive descent.4.Logging: Use _logger.warning(...) when cycles or depth limits are hit. This provides feedback without crashing.5.Configuration: The max_depth could be a configurable parameter of your JPathEvaluator or passed via the Context.This approach separates the concern of safely collecting nodes for a descendant operation from the concern of applying specific selectors to that collection. It directly addresses the risk of infinite loops from cyclic objects and also provides a failsafe for excessively deep structures. Remember to thoroughly test this with various cyclic and deep JSON structures!

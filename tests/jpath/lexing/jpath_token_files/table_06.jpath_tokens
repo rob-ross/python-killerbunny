@@ -1,0 +1,6 @@
+# file_name: table_06.jpath_tokens
+$[*]  :  DOLLAR, LBRACKET, STAR, RBRACKET, EOF
+$.o[*]  :  DOLLAR, DOT, ID:o, LBRACKET, STAR, RBRACKET, EOF
+$.o[*]  :  DOLLAR, DOT, ID:o, LBRACKET, STAR, RBRACKET, EOF
+$.o[*, *]  :  DOLLAR, DOT, ID:o, LBRACKET, STAR, COMMA, STAR, RBRACKET, EOF
+$.a[*]  :  DOLLAR, DOT, ID:a, LBRACKET, STAR, RBRACKET, EOF

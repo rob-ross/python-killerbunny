@@ -1,0 +1,99 @@
+#  File: grammar.txt
+#  Copyright (c) 2025 Robert L. Ross
+#  All rights reserved.
+#  Open-source license to come.
+#  Created by: Robert L. Ross
+#
+
+Simplified grammar from RFC 9535
+
+Legend:
+    ::=         : production symbol; "A ::== foo | bar" means A can be replaced by foo or bar
+    | (pipe)    : alternatives; "A ::=  foo | bar" means A produces either foo or bar
+    "" (quotes) : items enclosed in double quotes are literal text. "A ::= "*" foo" means A produces a literal
+                    asterisk (star) character (a terminal symbol) followed by a foo (non-terminal).
+                    Note: letters in quotes are case insensitive, so "A" means either a literal "A" or "a".
+    ( )         : groups items for clarity, not a literal grammar element. But a quoted character like
+                    "(" would mean parse a literal left-paren
+    [ ]         : Brackets enclose an optional symbol or symbols that can either be present or not.
+    *           : An asterisk after a symbol or grouping in parens means you may repeat that symbol or grouping 0 or
+                    more times. E.g. "$" ( segment )* means a literal dollar sign followed by zero or more occurrances
+                    of a segment symbol.
+
+
+start                   ::=     jsonpath_query
+
+jsonpath_query          ::=     "$" segments
+
+segments                ::=     ( segment )*
+
+segment                 ::=     child_segment |
+                                descendant_segment
+
+child_segment           ::=     bracketed_selection  |
+                                "." ( "*" | member_name_shorthand:IDENTIFIER )
+
+descendant_segment      ::=      ".."  ( bracketed_selection | "*" | member_name_shorthand:IDENTIFIER )
+
+
+bracketed_selection     ::= "[" selector ( "," selector )* "]"
+
+
+selector                ::=     name_selector:STRING_LITERAL |
+                                "*" |
+                                slice_selector |
+                                index_selector:INT_LITERAL |
+                                filter_selector
+
+
+slice_selector          ::=   [ start:INT ]  ":" [ end:INT ] [ ":" [step:INT] ]
+
+
+
+
+filter_selector         ::=     "?" logical_expr
+
+logical_expr            ::=     logical_or_expr
+
+logical_or_expr         ::=     logical_and_expression ( "||" logical_and_expression )*  ; disjunction, binds less
+                                                                                         ; tightly than conjuntion
+
+logical_and_expr        ::=     basic_expr ( "&&" basic_expr )*  ; conjunction, binds more tightly than disjunction
+
+basic_expr              ::=     paren_expr | comparison_expr | test_expr
+
+paren_expr              ::=     [ "!" ] "(" logical_expr ")"
+
+comparison_expr         ::=     comparable ( "=="  |  "!="  |  "<="  |  ">="  |  "<"  |  ">")  comparable
+
+test_expr               ::=     [ "!" ] ( filter_query | function_expr )
+
+filter_query            ::=     rel_query | jsonpath_query
+
+rel_query               ::=     "@" segments
+
+
+comparable              ::=     singular_query |    ; singular query value
+                                function_expr |    ; ValueType
+                                literal
+
+singular_query          ::=     rel_singular_query | abs_singular_query
+
+rel_singular_query      ::=     "@" singular_query_segments
+
+abs_singular_query      ::=     "$" singular_query_segments
+
+singular_query_segments ::=     ( singular_query_segment )*
+
+singular_query_segment  ::=    name_segment | index_segment
+
+name_segment            ::=     ( "[" name_selector:STRING_LITERAL "]" ) | ( "." member_name_shorthand:IDENTIFIER)
+
+index_segment           ::=     "[" index_selector:INT_LITERAL "]"
+
+function_expr           ::=     function_name:IDENTIFIER "(" [ function_argument ( "," function_argument )* ] ")"
+
+function_argument       ::=     logical_expr  |
+                                filter_query  |  ; includes singular query
+                                function_expr |
+                                literal

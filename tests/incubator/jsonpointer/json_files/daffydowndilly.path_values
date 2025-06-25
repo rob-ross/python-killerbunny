@@ -1,0 +1,47 @@
+""  :  { "word": "daffydowndilly", "pos": "noun", "lang": "English", "lang_code": "en", "head_templates": [ { "name": "en-noun", "args": {  }, "expansion": "daffydowndilly (plural daffydowndillies)" } ], "forms": [ { "form": "daffydowndillies", "tags": [ "plural" ] } ], "senses": [ { "links": [ [ "daffadowndilly", "daffadowndilly#English" ] ], "glosses": [ "Alternative form of daffadowndilly" ], "tags": [ "alt-of", "alternative", "abbreviation" ], "alt_of": [ { "word": "daffadowndilly" } ], "categories": [ "English countable nouns", "English entries with incorrect language header", "English lemmas", "English nouns", "Pages with 1 entry", "Pages with entries" ] } ] }
+/word  :  "daffydowndilly"
+/pos  :  "noun"
+/lang  :  "English"
+/lang_code  :  "en"
+/head_templates  :  [ { "name": "en-noun", "args": {  }, "expansion": "daffydowndilly (plural daffydowndillies)" } ]
+/head_templates/0  :  { "name": "en-noun", "args": {  }, "expansion": "daffydowndilly (plural daffydowndillies)" }
+/head_templates/0/name  :  "en-noun"
+/head_templates/0/args  :  {  }
+/head_templates/0/expansion  :  "daffydowndilly (plural daffydowndillies)"
+/head_templates/-  :  1
+/forms  :  [ { "form": "daffydowndillies", "tags": [ "plural" ] } ]
+/forms/0  :  { "form": "daffydowndillies", "tags": [ "plural" ] }
+/forms/0/form  :  "daffydowndillies"
+/forms/0/tags  :  [ "plural" ]
+/forms/0/tags/0  :  "plural"
+/forms/0/tags/-  :  1
+/forms/-  :  1
+/senses  :  [ { "links": [ [ "daffadowndilly", "daffadowndilly#English" ] ], "glosses": [ "Alternative form of daffadowndilly" ], "tags": [ "alt-of", "alternative", "abbreviation" ], "alt_of": [ { "word": "daffadowndilly" } ], "categories": [ "English countable nouns", "English entries with incorrect language header", "English lemmas", "English nouns", "Pages with 1 entry", "Pages with entries" ] } ]
+/senses/0  :  { "links": [ [ "daffadowndilly", "daffadowndilly#English" ] ], "glosses": [ "Alternative form of daffadowndilly" ], "tags": [ "alt-of", "alternative", "abbreviation" ], "alt_of": [ { "word": "daffadowndilly" } ], "categories": [ "English countable nouns", "English entries with incorrect language header", "English lemmas", "English nouns", "Pages with 1 entry", "Pages with entries" ] }
+/senses/0/links  :  [ [ "daffadowndilly", "daffadowndilly#English" ] ]
+/senses/0/links/0  :  [ "daffadowndilly", "daffadowndilly#English" ]
+/senses/0/links/0/0  :  "daffadowndilly"
+/senses/0/links/0/1  :  "daffadowndilly#English"
+/senses/0/links/0/-  :  2
+/senses/0/links/-  :  1
+/senses/0/glosses  :  [ "Alternative form of daffadowndilly" ]
+/senses/0/glosses/0  :  "Alternative form of daffadowndilly"
+/senses/0/glosses/-  :  1
+/senses/0/tags  :  [ "alt-of", "alternative", "abbreviation" ]
+/senses/0/tags/0  :  "alt-of"
+/senses/0/tags/1  :  "alternative"
+/senses/0/tags/2  :  "abbreviation"
+/senses/0/tags/-  :  3
+/senses/0/alt_of  :  [ { "word": "daffadowndilly" } ]
+/senses/0/alt_of/0  :  { "word": "daffadowndilly" }
+/senses/0/alt_of/0/word  :  "daffadowndilly"
+/senses/0/alt_of/-  :  1
+/senses/0/categories  :  [ "English countable nouns", "English entries with incorrect language header", "English lemmas", "English nouns", "Pages with 1 entry", "Pages with entries" ]
+/senses/0/categories/0  :  "English countable nouns"
+/senses/0/categories/1  :  "English entries with incorrect language header"
+/senses/0/categories/2  :  "English lemmas"
+/senses/0/categories/3  :  "English nouns"
+/senses/0/categories/4  :  "Pages with 1 entry"
+/senses/0/categories/5  :  "Pages with entries"
+/senses/0/categories/-  :  6
+/senses/-  :  1

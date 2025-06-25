@@ -1,0 +1,73 @@
+""  :  { "word": "\\\\o//", "pos": "symbol", "lang": "Translingual", "lang_code": "mul", "head_templates": [ { "name": "head", "args": { "1": "mul", "2": "symbol", "nolinkhead": "", "head": "\\\\o//", "head2": "", "head3": "", "head4": "", "sc": "Zsym", "sort": "", "cat2": "", "3": "", "4": "", "f1nolink": "", "f1lang": "en", "5": "or", "6": "", "f2nolink": "", "f2lang": "en", "7": "or", "8": "", "f3nolink": "", "f3lang": "en", "9": "or", "10": "", "f4nolink": "", "f4lang": "en" }, "expansion": "\\\\o//" }, { "name": "mul-symbol", "args": { "head": "\\\\o//" }, "expansion": "\\\\o//" } ], "senses": [ { "links": [ [ "\\o/", "\\o/#Translingual" ] ], "glosses": [ "Alternative form of \\o/" ], "tags": [ "alt-of", "alternative" ], "alt_of": [ { "word": "\\o/" } ], "categories": [ "Pages with 1 entry", "Pages with entries", "Translingual emoticons", "Translingual entries with incorrect language header", "Translingual lemmas", "Translingual symbols", "Translingual terms spelled with /", "Translingual terms spelled with \\", "Translingual terms with non-redundant manual script codes" ] } ] }
+/word  :  "\\\\o//"
+/pos  :  "symbol"
+/lang  :  "Translingual"
+/lang_code  :  "mul"
+/head_templates  :  [ { "name": "head", "args": { "1": "mul", "2": "symbol", "nolinkhead": "", "head": "\\\\o//", "head2": "", "head3": "", "head4": "", "sc": "Zsym", "sort": "", "cat2": "", "3": "", "4": "", "f1nolink": "", "f1lang": "en", "5": "or", "6": "", "f2nolink": "", "f2lang": "en", "7": "or", "8": "", "f3nolink": "", "f3lang": "en", "9": "or", "10": "", "f4nolink": "", "f4lang": "en" }, "expansion": "\\\\o//" }, { "name": "mul-symbol", "args": { "head": "\\\\o//" }, "expansion": "\\\\o//" } ]
+/head_templates/0  :  { "name": "head", "args": { "1": "mul", "2": "symbol", "nolinkhead": "", "head": "\\\\o//", "head2": "", "head3": "", "head4": "", "sc": "Zsym", "sort": "", "cat2": "", "3": "", "4": "", "f1nolink": "", "f1lang": "en", "5": "or", "6": "", "f2nolink": "", "f2lang": "en", "7": "or", "8": "", "f3nolink": "", "f3lang": "en", "9": "or", "10": "", "f4nolink": "", "f4lang": "en" }, "expansion": "\\\\o//" }
+/head_templates/0/name  :  "head"
+/head_templates/0/args  :  { "1": "mul", "2": "symbol", "nolinkhead": "", "head": "\\\\o//", "head2": "", "head3": "", "head4": "", "sc": "Zsym", "sort": "", "cat2": "", "3": "", "4": "", "f1nolink": "", "f1lang": "en", "5": "or", "6": "", "f2nolink": "", "f2lang": "en", "7": "or", "8": "", "f3nolink": "", "f3lang": "en", "9": "or", "10": "", "f4nolink": "", "f4lang": "en" }
+/head_templates/0/args/1  :  "mul"
+/head_templates/0/args/2  :  "symbol"
+/head_templates/0/args/nolinkhead  :  ""
+/head_templates/0/args/head  :  "\\\\o//"
+/head_templates/0/args/head2  :  ""
+/head_templates/0/args/head3  :  ""
+/head_templates/0/args/head4  :  ""
+/head_templates/0/args/sc  :  "Zsym"
+/head_templates/0/args/sort  :  ""
+/head_templates/0/args/cat2  :  ""
+/head_templates/0/args/3  :  ""
+/head_templates/0/args/4  :  ""
+/head_templates/0/args/f1nolink  :  ""
+/head_templates/0/args/f1lang  :  "en"
+/head_templates/0/args/5  :  "or"
+/head_templates/0/args/6  :  ""
+/head_templates/0/args/f2nolink  :  ""
+/head_templates/0/args/f2lang  :  "en"
+/head_templates/0/args/7  :  "or"
+/head_templates/0/args/8  :  ""
+/head_templates/0/args/f3nolink  :  ""
+/head_templates/0/args/f3lang  :  "en"
+/head_templates/0/args/9  :  "or"
+/head_templates/0/args/10  :  ""
+/head_templates/0/args/f4nolink  :  ""
+/head_templates/0/args/f4lang  :  "en"
+/head_templates/0/expansion  :  "\\\\o//"
+/head_templates/1  :  { "name": "mul-symbol", "args": { "head": "\\\\o//" }, "expansion": "\\\\o//" }
+/head_templates/1/name  :  "mul-symbol"
+/head_templates/1/args  :  { "head": "\\\\o//" }
+/head_templates/1/args/head  :  "\\\\o//"
+/head_templates/1/expansion  :  "\\\\o//"
+/head_templates/-  :  2
+/senses  :  [ { "links": [ [ "\\o/", "\\o/#Translingual" ] ], "glosses": [ "Alternative form of \\o/" ], "tags": [ "alt-of", "alternative" ], "alt_of": [ { "word": "\\o/" } ], "categories": [ "Pages with 1 entry", "Pages with entries", "Translingual emoticons", "Translingual entries with incorrect language header", "Translingual lemmas", "Translingual symbols", "Translingual terms spelled with /", "Translingual terms spelled with \\", "Translingual terms with non-redundant manual script codes" ] } ]
+/senses/0  :  { "links": [ [ "\\o/", "\\o/#Translingual" ] ], "glosses": [ "Alternative form of \\o/" ], "tags": [ "alt-of", "alternative" ], "alt_of": [ { "word": "\\o/" } ], "categories": [ "Pages with 1 entry", "Pages with entries", "Translingual emoticons", "Translingual entries with incorrect language header", "Translingual lemmas", "Translingual symbols", "Translingual terms spelled with /", "Translingual terms spelled with \\", "Translingual terms with non-redundant manual script codes" ] }
+/senses/0/links  :  [ [ "\\o/", "\\o/#Translingual" ] ]
+/senses/0/links/0  :  [ "\\o/", "\\o/#Translingual" ]
+/senses/0/links/0/0  :  "\\o/"
+/senses/0/links/0/1  :  "\\o/#Translingual"
+/senses/0/links/0/-  :  2
+/senses/0/links/-  :  1
+/senses/0/glosses  :  [ "Alternative form of \\o/" ]
+/senses/0/glosses/0  :  "Alternative form of \\o/"
+/senses/0/glosses/-  :  1
+/senses/0/tags  :  [ "alt-of", "alternative" ]
+/senses/0/tags/0  :  "alt-of"
+/senses/0/tags/1  :  "alternative"
+/senses/0/tags/-  :  2
+/senses/0/alt_of  :  [ { "word": "\\o/" } ]
+/senses/0/alt_of/0  :  { "word": "\\o/" }
+/senses/0/alt_of/0/word  :  "\\o/"
+/senses/0/alt_of/-  :  1
+/senses/0/categories  :  [ "Pages with 1 entry", "Pages with entries", "Translingual emoticons", "Translingual entries with incorrect language header", "Translingual lemmas", "Translingual symbols", "Translingual terms spelled with /", "Translingual terms spelled with \\", "Translingual terms with non-redundant manual script codes" ]
+/senses/0/categories/0  :  "Pages with 1 entry"
+/senses/0/categories/1  :  "Pages with entries"
+/senses/0/categories/2  :  "Translingual emoticons"
+/senses/0/categories/3  :  "Translingual entries with incorrect language header"
+/senses/0/categories/4  :  "Translingual lemmas"
+/senses/0/categories/5  :  "Translingual symbols"
+/senses/0/categories/6  :  "Translingual terms spelled with /"
+/senses/0/categories/7  :  "Translingual terms spelled with \\"
+/senses/0/categories/8  :  "Translingual terms with non-redundant manual script codes"
+/senses/0/categories/-  :  9
+/senses/-  :  1
