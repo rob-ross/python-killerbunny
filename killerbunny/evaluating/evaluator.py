@@ -206,42 +206,39 @@ class JPathEvaluator:
                     
         return VNodeList(collected_vnodes)
         
-    def _children_of(self, value_node: VNode) -> VNodeList:
+    def _children_of(self, parent_node: VNode) -> VNodeList:
         """Return the children of the argument node.
         
         See section 1.1., "Terminology", pg 6, RFC 9535
         Children (of a node): If the node is an array, the nodes of its elements; if the node is an object,
         the nodes of its member values. If the node is neither an array nor an object, it has no children.
         
-        If the caller intends to recurse further into each returned child node, the caller is responsible
-        for checking that these children have not been seen yet to prevent a cycle and infinite recursion.
+        This method will detect a cycle when a child of the parent node `parent_node` is the same instance as the
+        parent node, as determined by calling id() on the parent and child nodes. In this case, that child will not
+        be included in the retrned VNodeList.
         """
         child_nodes: list[VNode] = []
-        instance_ids: dict[int, VNode] = {id(value_node.jvalue):value_node}
+        instance_ids: dict[int, VNode] = {id(parent_node.jvalue):parent_node}
     
-        if isinstance(value_node.jvalue, JSON_STRUCTURED_TYPES):
-            base_path = value_node.jpath
-            if isinstance(value_node.jvalue, JSON_ARRAY_TYPES):
-                for index, element in enumerate(value_node.jvalue):
+        if isinstance(parent_node.jvalue, JSON_STRUCTURED_TYPES):
+            base_path = parent_node.jpath
+            if isinstance(parent_node.jvalue, JSON_ARRAY_TYPES):
+                for index, element in enumerate(parent_node.jvalue):
                     element_path = NormalizedJPath(f"{base_path}[{index}]")
-                    vnode = VNode(element_path, element, value_node.root_value, value_node.node_depth + 1)
+                    vnode = VNode(element_path, element, parent_node.root_value, parent_node.node_depth + 1)
                     if id(element) in instance_ids:
                         _logger.warning(f"Circular reference cycle detected: current node: {vnode} already included as: {instance_ids[id(element)]}")
                         print(f"\n+++Circular reference cycle detected: current node: {vnode} already included as: {instance_ids[id(element)]}")
                         continue
-                    if isinstance(element, JSON_STRUCTURED_TYPES):
-                        instance_ids[id(element)] = vnode
                     child_nodes.append(vnode)
-            elif isinstance(value_node.jvalue, JSON_OBJECT_TYPES):
-                for member_name, member_value in value_node.jvalue.items():
+            elif isinstance(parent_node.jvalue, JSON_OBJECT_TYPES):
+                for member_name, member_value in parent_node.jvalue.items():
                     element_path = NormalizedJPath(f"{base_path}['{member_name}']")
-                    vnode = VNode(element_path, member_value, value_node.root_value, value_node.node_depth + 1)
+                    vnode = VNode(element_path, member_value, parent_node.root_value, parent_node.node_depth + 1)
                     if id(member_value) in instance_ids:
                         _logger.warning(f"Circular reference cycle detected: current node: {vnode} already included as: {instance_ids[id(member_value)]}")
                         print(f"\n+++Circular reference cycle detected: current node: {vnode} already included as: {instance_ids[id(member_value)]}")
                         continue
-                    if isinstance(member_value, JSON_STRUCTURED_TYPES):
-                        instance_ids[id(member_value)] = vnode
                     child_nodes.append(vnode)
         
         return VNodeList(child_nodes)

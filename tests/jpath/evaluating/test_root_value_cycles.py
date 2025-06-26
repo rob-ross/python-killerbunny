@@ -215,10 +215,13 @@ def test_cs_list(child_list_cycle: JSON_ValueType, caplog: LogCaptureFixture) ->
     expected_values = [1]  # eval will not include a cycle in the result, so the cyclic parent_list is not included
     
     actual_values = list(node_list.values())
+    actual_paths = [npath.jpath_str for npath in node_list.paths() ]
+    
+    print(f"\nactual_paths: {actual_paths}, actual_values: {actual_values}")
+    
     assert len(actual_values) == len(expected_values)
     assert actual_values[0]   == expected_values[0]
     
-    actual_paths = [npath.jpath_str for npath in node_list.paths() ]
     assert actual_paths == ['$[0]']
 
     log_msg_assert(
@@ -246,5 +249,43 @@ def test_ds_list(child_list_cycle: JSON_ValueType, caplog: LogCaptureFixture)-> 
         "Circular reference cycle detected: current node: $[1], [1, [...]] already included as: $, [1, [...]]",
         caplog
     )
+
+def test_ds_deeply_nested() -> None:
+    ...
     
     
+def test_duplicated_member_list_no_nesting() -> None:
+    """If we have a member used multiple times but not nested, this should not prevent inclusion"""
+    shared_list = [ "one", "two", "three"]
+    parent_list = [ shared_list, shared_list, shared_list ]
+    
+    jpath_query_str = '$[*]'
+    query = WellFormedValidQuery.from_str(jpath_query_str)
+    node_list:VNodeList = query.eval(parent_list)
+    
+    actual_values = list(node_list.values())
+    actual_paths = [npath.jpath_str for npath in node_list.paths() ]
+    
+    expected_values: list[Any] = [['one', 'two', 'three'], ['one', 'two', 'three'], ['one', 'two', 'three']]
+    expected_paths = ['$[0]', '$[1]', '$[2]']
+    
+    assert actual_values == expected_values
+    assert actual_paths == expected_paths
+
+def test_duplicated_member_dict_no_nesting() -> None:
+    """If we have a member used multiple times but not nested, this should not prevent inclusion"""
+    shared_dict = { "one": "one", "two": "two", "three": "three" }
+    parent_dict = { "first": shared_dict, "second": shared_dict, "third": shared_dict }
+    
+    jpath_query_str = '$[*]'
+    query = WellFormedValidQuery.from_str(jpath_query_str)
+    node_list:VNodeList = query.eval(parent_dict)
+    
+    actual_values = list(node_list.values())
+    actual_paths = [npath.jpath_str for npath in node_list.paths() ]
+    
+    expected_values: list[Any] = [['one', 'two', 'three'], ['one', 'two', 'three'], ['one', 'two', 'three']]
+    expected_paths = ['$[0]', '$[1]', '$[2]']
+    
+    assert actual_values == expected_values
+    assert actual_paths == expected_paths
