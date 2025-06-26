@@ -34,6 +34,9 @@ coverage.xml
 out/
 .idea/          # JetBrains IDEs (PyCharm, IntelliJ)
 *.iml
+*.iws
+*.ipr
+
 .vscode/        # Visual Studio Code (can sometimes share launch.json/settings.json if desired)
 *.sublime-*     # Sublime Text
 nbproject/      # NetBeans
@@ -58,10 +61,3 @@ secrets.*
 # Log files
 *.log
 logs/
-
-
-# local data and config home directory
-wordspy_home/
-
-
-/.idea/inspectionProfiles/Project_Default.xml
