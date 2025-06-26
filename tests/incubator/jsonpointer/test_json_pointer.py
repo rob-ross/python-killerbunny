@@ -52,11 +52,6 @@ def test_resolve_json_pointer(filename, json_obj, path, expected_value):
     assert actual_value == expected_value, f"{actual_value=}\n{expected_value=}"
 
 
-# @pytest.fixture(scope="module")
-# def json_object_fixture() -> dict:
-#     jobj =load_obj_from_json_file(JSON_FILES_DIR /"json.1.json")
-#     return jobj
-
 @pytest.fixture(scope="module")
 def json_object_fixture(json_files_dir_fixture: Path, load_obj_from_json_file_func) -> dict:
     jobj_path = json_files_dir_fixture / "json.1.json"
