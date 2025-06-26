@@ -33,7 +33,7 @@ coverage.xml
 ### IntelliJ IDEA ###
 out/
 .idea/          # JetBrains IDEs (PyCharm, IntelliJ)
-.iml
+*.iml
 .vscode/        # Visual Studio Code (can sometimes share launch.json/settings.json if desired)
 *.sublime-*     # Sublime Text
 nbproject/      # NetBeans
