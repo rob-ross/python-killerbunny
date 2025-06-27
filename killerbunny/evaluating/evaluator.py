@@ -227,8 +227,8 @@ class JPathEvaluator:
                     element_path = NormalizedJPath(f"{base_path}[{index}]")
                     vnode = VNode(element_path, element, parent_node.root_value, parent_node.node_depth + 1)
                     if id(element) in instance_ids:
-                        _logger.warning(f"Circular reference cycle detected: current node: {vnode} already included as: {instance_ids[id(element)]}")
-                        print(f"\n+++Circular reference cycle detected: current node: {vnode} already included as: {instance_ids[id(element)]}")
+                        _logger.warning(f"Circular reference cycle detected: child node: {vnode} same as parent: {instance_ids[id(element)]}")
+                        #print(f"\n+++Circular reference cycle detected: current node: {vnode} already included as: {instance_ids[id(element)]}")
                         continue
                     child_nodes.append(vnode)
             elif isinstance(parent_node.jvalue, JSON_OBJECT_TYPES):
@@ -236,8 +236,8 @@ class JPathEvaluator:
                     element_path = NormalizedJPath(f"{base_path}['{member_name}']")
                     vnode = VNode(element_path, member_value, parent_node.root_value, parent_node.node_depth + 1)
                     if id(member_value) in instance_ids:
-                        _logger.warning(f"Circular reference cycle detected: current node: {vnode} already included as: {instance_ids[id(member_value)]}")
-                        print(f"\n+++Circular reference cycle detected: current node: {vnode} already included as: {instance_ids[id(member_value)]}")
+                        _logger.warning(f"Circular reference cycle detected: child node: {vnode} same as parent: {instance_ids[id(member_value)]}")
+                        #print(f"\n+++Circular reference cycle detected: current node: {vnode} already included as: {instance_ids[id(member_value)]}")
                         continue
                     child_nodes.append(vnode)
         

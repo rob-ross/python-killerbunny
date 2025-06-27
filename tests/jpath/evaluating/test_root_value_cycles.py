@@ -8,7 +8,7 @@
 """Tests the evaluator with cyclic data. Cycles cannot be (easily?) represented in JSON text but could easily happen
 when generating nested data programmatically. Cycles can be used as an attack vector to crash the evaluator with
 a stack overflow error. """
-from typing import Any
+from typing import Any, cast
 
 import pytest
 from _pytest.logging import LogCaptureFixture
@@ -53,6 +53,7 @@ def log_msg_assert(msg: str, caplog: LogCaptureFixture) -> None:
     assert len(caplog.records) > 0
     record = caplog.records[0]
     msgs = [record.msg for record in caplog.records]
+    print(f"\nmsgs={msgs}")
     assert record.levelname == "WARNING"
     assert msg in msgs
 
@@ -72,7 +73,8 @@ def test_cs_dict(child_dict_cycle: JSON_ValueType, caplog: LogCaptureFixture) ->
     assert actual_paths == ["$['one']"]
     
     log_msg_assert(
-        "Circular reference cycle detected: current node: $['cycle'], {'one': 1, 'cycle': {...}} already included as: $, {'one': 1, 'cycle': {...}}",
+        "Circular reference cycle detected: child node: $['cycle'], {'one': 1, "
+        "'cycle': {...}} same as parent: $, {'one': 1, 'cycle': {...}}",
         caplog
     )
 
@@ -225,7 +227,7 @@ def test_cs_list(child_list_cycle: JSON_ValueType, caplog: LogCaptureFixture) ->
     assert actual_paths == ['$[0]']
 
     log_msg_assert(
-    "Circular reference cycle detected: current node: $[1], [1, [...]] already included as: $, [1, [...]]",
+    "Circular reference cycle detected: child node: $[1], [1, [...]] same as parent: $, [1, [...]]",
           caplog
     )
 
@@ -250,9 +252,7 @@ def test_ds_list(child_list_cycle: JSON_ValueType, caplog: LogCaptureFixture)-> 
         caplog
     )
 
-def test_ds_deeply_nested() -> None:
-    ...
-    
+
     
 def test_duplicated_member_list_no_nesting() -> None:
     """If we have a member used multiple times but not nested, this should not prevent inclusion"""
@@ -284,8 +284,115 @@ def test_duplicated_member_dict_no_nesting() -> None:
     actual_values = list(node_list.values())
     actual_paths = [npath.jpath_str for npath in node_list.paths() ]
     
-    expected_values: list[Any] = [['one', 'two', 'three'], ['one', 'two', 'three'], ['one', 'two', 'three']]
-    expected_paths = ['$[0]', '$[1]', '$[2]']
+    expected_values: list[Any] = [{'one': 'one', 'three': 'three', 'two': 'two'},
+                                  {'one': 'one', 'three': 'three', 'two': 'two'},
+                                  {'one': 'one', 'three': 'three', 'two': 'two'}
+    ]
+    expected_paths = ["$['first']", "$['second']", "$['third']"]
     
     assert actual_values == expected_values
     assert actual_paths == expected_paths
+
+@pytest.fixture(scope="module", autouse=True)
+def doubly_nested_cycle() -> JSON_ValueType:
+    shared_list: list[Any] = [ "1", "2", "3"]
+    shared_dict: dict[str, Any] = { "one": "one", "two": "two", "three": "three" }
+    parent_list: list[Any] = [ "a", "b", "c", shared_list, shared_dict ]
+    shared_list.append(shared_dict)
+    shared_dict["shared_list"] = shared_list
+    return parent_list
+
+def test_cs_list_doubly_nested(doubly_nested_cycle: JSON_ValueType, caplog: LogCaptureFixture) -> None:
+    jpath_query_str = '$[*]'
+    query = WellFormedValidQuery.from_str(jpath_query_str)
+    node_list:VNodeList = query.eval(doubly_nested_cycle)
+    
+    actual_values = list(node_list.values())
+    actual_values_str = f"{actual_values}"
+    actual_paths = [npath.jpath_str for npath in node_list.paths() ]
+    
+    expected_values = doubly_nested_cycle
+    expected_values_str = ("['a', 'b', 'c', ['1', '2', '3', {'one': 'one', 'two': 'two', 'three': 'three', 'shared_list': [...]}], "
+                           "{'one': 'one', 'two': 'two', 'three': 'three', 'shared_list': ['1', '2', '3', {...}]}]")
+    expected_paths:  list[Any] = ['$[0]', '$[1]', '$[2]', '$[3]', '$[4]']
+    
+    assert actual_values_str == expected_values_str
+    assert actual_values == expected_values
+    assert actual_paths == expected_paths
+
+def test_ds_list_doubly_nested(doubly_nested_cycle: JSON_ValueType, caplog: LogCaptureFixture) -> None:
+    root_value: list[Any] = cast(list[Any], doubly_nested_cycle)
+    
+    
+    jpath_query_str = '$..[*]'
+    query = WellFormedValidQuery.from_str(jpath_query_str)
+    node_list:VNodeList = query.eval(root_value)
+    
+    actual_values = list(node_list.values())
+    actual_values_str = f"{actual_values}"
+    actual_paths = [npath.jpath_str for npath in node_list.paths() ]
+    
+    expected_values: list[Any] = [ 'a', 'b', 'c', root_value[3], root_value[4], '1', '2', '3', root_value[4], 'one', 'two', 'three']
+    
+    expected_values_str = ("['a', 'b', 'c', ['1', '2', '3', {'one': 'one', 'two': 'two', 'three': 'three', 'shared_list': [...]}], {'one': 'one', 'two': 'two', 'three': 'three', 'shared_list': ['1', '2', '3', {...}]}, "
+                           "'1', '2', '3', {'one': 'one', 'two': 'two', 'three': 'three', 'shared_list': ['1', '2', '3', {...}]}, 'one', 'two', 'three']")
+    expected_paths:  list[Any] =  ['$[0]', '$[1]', '$[2]', '$[3]', '$[4]', '$[3][0]', '$[3][1]', '$[3][2]', '$[3][3]', "$[4]['one']", "$[4]['two']", "$[4]['three']"]
+    
+    assert actual_values_str == expected_values_str
+    assert actual_values == expected_values
+    assert actual_paths == expected_paths
+    
+    log_msg_assert(
+        "Circular reference cycle detected: current node: $[3][3], {'one': 'one', "
+        "'two': 'two', 'three': 'three', 'shared_list': ['1', '2', '3', {...}]} "
+        "already included as: $[4], {'one': 'one', 'two': 'two', 'three': 'three', "
+        "'shared_list': ['1', '2', '3', {...}]}",
+        caplog
+    )
+
+def test_ds_list_deeply_nested(doubly_nested_cycle: JSON_ValueType, caplog: LogCaptureFixture) -> None:
+    root_value: list[Any] = cast(list[Any], doubly_nested_cycle)
+    root_value[4]["cycle"] = root_value  # nested dict now has member reference to parent
+    
+    jpath_query_str = '$..[*]'
+    query = WellFormedValidQuery.from_str(jpath_query_str)
+    node_list:VNodeList = query.eval(root_value)
+    
+    actual_values = list(node_list.values())
+    actual_values_str = f"{actual_values}"
+    actual_paths = [npath.jpath_str for npath in node_list.paths() ]
+    
+    expected_values: list[Any] = [ 'a', 'b', 'c', root_value[3], root_value[4], '1', '2', '3', root_value[4], 'one', 'two', 'three']
+    
+    expected_values_str = ("['a', 'b', 'c', ['1', '2', '3', {'one': 'one', 'two': 'two', 'three': "
+                           "'three', 'shared_list': [...], 'cycle': ['a', 'b', 'c', [...], {...}]}], "
+                           "{'one': 'one', 'two': 'two', 'three': 'three', 'shared_list': ['1', '2', "
+                           "'3', {...}], 'cycle': ['a', 'b', 'c', ['1', '2', '3', {...}], {...}]}, '1', "
+                           "'2', '3', {'one': 'one', 'two': 'two', 'three': 'three', 'shared_list': "
+                           "['1', '2', '3', {...}], 'cycle': ['a', 'b', 'c', ['1', '2', '3', {...}], "
+                           "{...}]}, 'one', 'two', 'three']")
+    
+    expected_paths: list[Any] = ['$[0]',
+                                 '$[1]',
+                                 '$[2]',
+                                 '$[3]',
+                                 '$[4]',
+                                 '$[3][0]',
+                                 '$[3][1]',
+                                 '$[3][2]',
+                                 '$[3][3]',
+                                 "$[4]['one']",
+                                 "$[4]['two']",
+                                 "$[4]['three']"]
+    
+    assert actual_values_str == expected_values_str
+    assert actual_paths == expected_paths
+    assert actual_values == expected_values
+    
+    log_msg_assert(
+        "Circular reference cycle detected: current node: $[3][3], {'one': 'one', 'two': 'two', 'three': 'three', "
+        "'shared_list': ['1', '2', '3', {...}], 'cycle': ['a', 'b', 'c', ['1', '2', '3', {...}], {...}]} "
+        "already included as: $[4], {'one': 'one', 'two': 'two', 'three': 'three', "
+        "'shared_list': ['1', '2', '3', {...}], 'cycle': ['a', 'b', 'c', ['1', '2', '3', {...}], {...}]}",
+        caplog
+    )
