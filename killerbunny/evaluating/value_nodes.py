@@ -12,7 +12,7 @@ These are nodes used to return query results from the evaluator. They are distin
 import json
 import logging
 from typing import Iterator, Generator
-from typing_extensions import override
+from typing import override  # type: ignore
 from killerbunny.evaluating.evaluator_types import EvaluatorValue, NormalizedJPath
 from killerbunny.parsing.helper import unescape_string_content
 from killerbunny.shared.json_type_defs import JSON_ValueType
