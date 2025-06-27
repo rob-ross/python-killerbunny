@@ -7,19 +7,12 @@
 
 
 """Evaluates a jsonpath query"""
+import logging
 from collections import deque
-from logging import Logger
 from typing import Callable, NamedTuple, TypeAlias, Union, cast, Any
-from killerbunny.shared.constants import (
-    ROOT_JSON_VALUE_KEY,
-    SEGMENT_INPUT_NODELIST_KEY,
-    FILTER_SELECTOR_INPUT_NODE_KEY,
-    CURRENT_NODE_KEY,
-    JPATH_QUERY_RESULT_NODE_KEY
-)
-from killerbunny.shared.context import Context
-from killerbunny.shared.errors import RTError, Error
+
 from killerbunny.evaluating.compare_ops import COMPARISON_OP_TYPE_LOOKUP
+from killerbunny.evaluating.evaluator_types import EvaluatorValue, NormalizedJPath
 from killerbunny.evaluating.runtime_result import RuntimeResult
 from killerbunny.evaluating.value_nodes import (
     VNodeList,
@@ -28,14 +21,6 @@ from killerbunny.evaluating.value_nodes import (
     BooleanValue,
     NullValue,
     StringValue
-)
-from killerbunny.evaluating.evaluator_types import EvaluatorValue, NormalizedJPath
-from killerbunny.shared.json_type_defs import (
-    JSON_PRIMITIVE_TYPES,
-    JSON_ARRAY_TYPES,
-    JSON_OBJECT_TYPES,
-    JSON_STRUCTURED_TYPES,
-    JSON_VALUE_TYPES
 )
 from killerbunny.parsing.function import Nothing, LogicalType, ValueType, FunctionCallNode, FunctionArgument
 from killerbunny.parsing.node_type import ASTNode, ASTNodeType
@@ -64,9 +49,25 @@ from killerbunny.parsing.terminal_nodes import (
     StringLiteralNode,
     IdentifierNode
 )
+from killerbunny.shared.constants import (
+    ROOT_JSON_VALUE_KEY,
+    SEGMENT_INPUT_NODELIST_KEY,
+    FILTER_SELECTOR_INPUT_NODE_KEY,
+    CURRENT_NODE_KEY,
+    JPATH_QUERY_RESULT_NODE_KEY
+)
+from killerbunny.shared.context import Context
+from killerbunny.shared.errors import RTError, Error
+from killerbunny.shared.json_type_defs import (
+    JSON_PRIMITIVE_TYPES,
+    JSON_ARRAY_TYPES,
+    JSON_OBJECT_TYPES,
+    JSON_STRUCTURED_TYPES,
+    JSON_VALUE_TYPES
+)
 from killerbunny.shared.position import Position
 
-_logger = Logger(__name__)
+_logger = logging.getLogger(__name__)
 
 
 ComparableType: TypeAlias = Union[ValueType, EvaluatorValue]
@@ -74,6 +75,7 @@ ComparableType: TypeAlias = Union[ValueType, EvaluatorValue]
 ####################################################################
 # EVALUATOR
 ####################################################################
+# noinspection PyPep8Naming,PyMethodMayBeStatic,DuplicatedCode
 class JPathEvaluator:
     """Evaluates a json path query string, in the form of an AST, for the json path query argument stored in the supplied
     Context. The main entry point is visit(), which is passed an AST from a successful parse result, along with
@@ -105,10 +107,10 @@ class JPathEvaluator:
 
     def visit_RootNode(self, node: RootNode, context: Context) -> RuntimeResult:
         """Set the JSON path query argument in the RootNode.
-        This value is used by the json path query to generate ouput nodes that
+        This value is used by the JSON path query to generate ouput nodes that
         match the query parameters. The value is obtained from the Context's symbol table with the key
         given by ROOT_JSON_VALUE_KEY.
-        :return the root nodelist in RuntimeResult.value
+        :return: The root nodelist in RuntimeResult.value
         """
         rt_res = RuntimeResult()
         root_json_value = context.get_symbol(ROOT_JSON_VALUE_KEY)
@@ -121,12 +123,12 @@ class JPathEvaluator:
         return rt_res.success(node.root_nodelist)
 
     def visit_JsonPathQueryNode(self, node: JsonPathQueryNode, context: Context) -> RuntimeResult:
-        """This node can represent the main entry point in the query, i.e., the entire json path query string
-        starting with $, or it can represnt an AbsoluteSingularQueryNode used inside a filter-selector.
-        Write result of query to the context with JPATH_QUERY_RESULT_NODE_KEY. If this is the top-level JsonPathQueryNode,
-        this is the final nodelist output of the query.
+        """This node can represent the main entry point in the query, i.e., the entire JSON path query string
+        starting with $, or it can represent an AbsoluteSingularQueryNode used inside a filter-selector.
+        Write the result of the query to the context with JPATH_QUERY_RESULT_NODE_KEY.
+        If this is the top-level JsonPathQueryNode, this is the final nodelist output of the query.
         
-        returns BooleanValue in RunttimeResult.value
+        returns: VNodeList in RunttimeResult.value
         """
         rt_res = RuntimeResult()
         input_nodelist: VNodeList = rt_res.register(self.visit_RootNode(node.root_node, context))
@@ -146,22 +148,19 @@ class JPathEvaluator:
             seg_context.set_symbol(SEGMENT_INPUT_NODELIST_KEY, input_nodelist)
             segment_output = rt_res.register(self.visit(seg_node, seg_context))
             if rt_res.error: return rt_res
-            input_nodelist = segment_output   # output of this segment becomes input for next segment
+            input_nodelist = segment_output   # output of this segment becomes input for the next segment
         
-        # last segment output is the final output nodelist
+        # the last segment output is the final output nodelist
         context.set_symbol(JPATH_QUERY_RESULT_NODE_KEY, segment_output)
-        # apply existence test here and return BooleanValue
-        #  we know that segments is not empty here, so this is safe:
-        ouput_pos = Position(node.position.text, segments[0].position.start, segments[-1].position.end)  # type: ignore
         return rt_res.success(segment_output)
-        # if segment_output:
-        #     return rt_res.success(BooleanValue.value_for(True).set_context(context).set_pos(ouput_pos))
-        # else:
-        #     return rt_res.success(BooleanValue.value_for(False).set_context(context).set_pos(ouput_pos))
+ 
     
-    def _collect_vnodes_and_their_descendants(self, initial_vnode: VNode, max_depth: int = 32) -> VNodeList:
+    def _collect_vnodes_and_their_descendants(self,
+                                              initial_vnode: VNode,
+                                              max_depth: int = 32,
+                                              ) -> VNodeList:
         """
-        Performs a breadth-first collection of VNodes, starting with initial_vnode,
+        Performs a breadth-first collection of VNodes, starting with the initial VNode,
         then its children, then grandchildren, etc.
         Each collected item is a VNode with its correct path.
         Handles circular references/cycle detection using VNode.jvalue's id(). If an object node has already been seen,
@@ -171,7 +170,8 @@ class JPathEvaluator:
         """
         collected_vnodes: list[VNode] = []
         instance_ids: dict[int, VNode] = {}  # keeps track of instance ids to detect circular references
-        # Queue for BFS: (VNode, current_depth)
+
+         # Queue for BFS: (VNode, current_depth)
         node_queue = deque([(initial_vnode, 0)])
         
         while node_queue:
@@ -192,7 +192,7 @@ class JPathEvaluator:
                 instance_ids[id(jvalue)] = cur_node
             collected_vnodes.append(cur_node)
             
-            # add children to queue for processing during next iteration
+            # add children to the queue for processing during the next iteration
             if isinstance(jvalue, JSON_ARRAY_TYPES):
                 for index, element in enumerate(jvalue):
                     new_node = VNode(NormalizedJPath(f"{jpath}[{index}]"), element,
@@ -203,55 +203,49 @@ class JPathEvaluator:
                     new_node = VNode(NormalizedJPath(f"{jpath}['{name}']"), value,
                                      cur_node.root_value, cur_node.node_depth + 1)
                     node_queue.append((new_node, depth + 1))
+                    
         return VNodeList(collected_vnodes)
         
-    def _children_of(self, value_node: VNode) -> VNodeList:
+    def _children_of(self, parent_node: VNode) -> VNodeList:
         """Return the children of the argument node.
         
-        see section 1.1.,  "Terminology", pg 6, RFC 9535
+        See section 1.1., "Terminology", pg 6, RFC 9535
         Children (of a node): If the node is an array, the nodes of its elements; if the node is an object,
         the nodes of its member values. If the node is neither an array nor an object, it has no children.
         
-        If caller intends to recurse further into each returned child node, caller is responsible
-        for checking that these children have not been seen yet to prevent a cycle and infinite recursion.
-        
+        This method will detect a cycle when a child of the parent node `parent_node` is the same instance as the
+        parent node, as determined by calling id() on the parent and child nodes. In this case, that child will not
+        be included in the retrned VNodeList.
         """
         child_nodes: list[VNode] = []
-        if isinstance(value_node.jvalue, JSON_STRUCTURED_TYPES):
-            base_path = value_node.jpath
-            if isinstance(value_node.jvalue, JSON_ARRAY_TYPES):
-                for index, element in enumerate(value_node.jvalue):
+        instance_ids: dict[int, VNode] = {id(parent_node.jvalue):parent_node}
+    
+        if isinstance(parent_node.jvalue, JSON_STRUCTURED_TYPES):
+            base_path = parent_node.jpath
+            if isinstance(parent_node.jvalue, JSON_ARRAY_TYPES):
+                for index, element in enumerate(parent_node.jvalue):
                     element_path = NormalizedJPath(f"{base_path}[{index}]")
-                    child_nodes.append(VNode(element_path, element, value_node.root_value, value_node.node_depth + 1))
-            elif isinstance(value_node.jvalue, JSON_OBJECT_TYPES):
-                for member_name, member_value in value_node.jvalue.items():
+                    vnode = VNode(element_path, element, parent_node.root_value, parent_node.node_depth + 1)
+                    if id(element) in instance_ids:
+                        _logger.warning(f"Circular reference cycle detected: child node: {vnode} same as parent: {instance_ids[id(element)]}")
+                        #print(f"\n+++Circular reference cycle detected: current node: {vnode} already included as: {instance_ids[id(element)]}")
+                        continue
+                    child_nodes.append(vnode)
+            elif isinstance(parent_node.jvalue, JSON_OBJECT_TYPES):
+                for member_name, member_value in parent_node.jvalue.items():
                     element_path = NormalizedJPath(f"{base_path}['{member_name}']")
-                    child_nodes.append(VNode(element_path, member_value, value_node.root_value, value_node.node_depth + 1))
+                    vnode = VNode(element_path, member_value, parent_node.root_value, parent_node.node_depth + 1)
+                    if id(member_value) in instance_ids:
+                        _logger.warning(f"Circular reference cycle detected: child node: {vnode} same as parent: {instance_ids[id(member_value)]}")
+                        #print(f"\n+++Circular reference cycle detected: current node: {vnode} already included as: {instance_ids[id(member_value)]}")
+                        continue
+                    child_nodes.append(vnode)
         
         return VNodeList(child_nodes)
         
-    def visit_DescendantSegment_new_in_progress(self, node: SegmentNode, context: Context) -> RuntimeResult:
-        """Descendants (of a node): The children of the node, together with the children of its children,
-        and so forth recursively. More formally, the "descendants" relation between nodes is the transitive closure
-        of the "children" relation.
-        
-        Children (of a node): If the node is an array, the nodes of its elements; if the node is an object,
-        the nodes of its member values. If the node is neither an array nor an object, it has no children.
-        
-        """
-        
-        rt_res = RuntimeResult()
-        input_nodelist: VNodeList = context.get_symbol(SEGMENT_INPUT_NODELIST_KEY)
-        # we collect the descendants of each node in the input_nodelist.
-        
-        segment_result_nodes: list[VNode] = []
-        for input_node in input_nodelist:
-            ...
-        
-        return rt_res.success(VNodeList(segment_result_nodes))
     
     def visit_DescendantSegment(self, node: SegmentNode, context: Context) -> RuntimeResult:
-        """Descendant segment creates input nodelist from all input nodes and all descendants of input nodes.
+        """Descendant segment creates and input nodelist from all input nodes and all descendants of input nodes.
         Drill down into all children of all nodes in the input VNodeList and apply all selectors
         to produce a concatenated output VNodeList
         2.5.2.2. Semantics, pg 43 RFC 9535
@@ -292,10 +286,15 @@ class JPathEvaluator:
             # where D1_vnode is current_d1_vnode.
             di_vnode_sequence: VNodeList = self._collect_vnodes_and_their_descendants(current_d1_vnode)
             
+            instance_ids: dict[int, VNode] = {}  # keeps track of instance ids to detect circular references
+        
             # Inner loop: "For each i such that 1 <= i <= n" (iterating through D1...Dn)
             # Let's call the current node from this sequence 'di_from_sequence'.
+            di_from_sequence: VNode
             for di_from_sequence in di_vnode_sequence:
-                # Ri is the result of applying child segment [<selectors>] to di_from_sequence
+                instance_ids[id(di_from_sequence.jvalue)] = di_from_sequence
+                
+                # Ri is the result of applying the child segment [<selectors>] to di_from_sequence
                 
                 # Create a temporary VNodeList containing only di_from_sequence,
                 # as selectors expect a VNodeList as input.
@@ -309,16 +308,19 @@ class JPathEvaluator:
                     
                     # Apply this individual selector to temp_input_for_selectors
                     descendant_segment_context = Context("<descendant_segment>", context, node.position )
-                    
                     descendant_segment_context.set_symbol(SEGMENT_INPUT_NODELIST_KEY, temp_input_for_selectors)
                 
                     current_selector_output: VNodeList = rt_res.register(self.visit(selector, descendant_segment_context))
                     if rt_res.error: return rt_res
                 
                     if current_selector_output:  # VNodeList might be empty
-                        ri_for_this_di.extend(current_selector_output.node_list)
-                
-                # Now, ri_for_this_di is complete (it's Ri).
+                        # exclude cycle nodes
+                        cycle_nodes = [node for node in current_selector_output.node_list if not id(node.jvalue) in instance_ids]
+                        # ri_for_this_di.extend(current_selector_output.node_list)
+                        ri_for_this_di.extend(cycle_nodes)
+
+            
+            # Now, ri_for_this_di is complete (it's Ri).
                 # Add it to the list that accumulates R values for the current_d1_vnode.
                 r_values_for_current_d1.extend(ri_for_this_di)
             
@@ -330,25 +332,7 @@ class JPathEvaluator:
         # After processing all nodes from the input_vnodelist,
         # overall_segment_results contains the final concatenated list.
         return rt_res.success(VNodeList(overall_segment_results))
-        
-    def visit_DescendantSegment_new(self, ast_node: SegmentNode, context: Context) -> RuntimeResult:
-        rt_res = RuntimeResult()
-        input_nodelist: VNodeList = context.get_symbol(SEGMENT_INPUT_NODELIST_KEY)
-        if input_nodelist is None:
-            # todo after testing convert this exception to a logging error msg.
-            raise ValueError(f"No input nodelist '{SEGMENT_INPUT_NODELIST_KEY}' found in Context for {ast_node}")
-        # This list will hold the final aggregated results for the entire segment
-        segment_output_list: list[VNode] = []
-        for current_node in input_nodelist:
-            descent_result_list:  list[VNode] = []
-            # nodes are visited before their descendants
-            for selector in ast_node.selectors:
-                selector_output:VNodeList = rt_res.register(self.visit(selector, context))
-                if rt_res.error: return rt_res
-                descent_result_list.extend(selector_output.node_list)
-                
     
-        return rt_res.success(VNodeList(segment_output_list))
     
     def visit_SegmentNode(self, node: SegmentNode, context: Context) -> RuntimeResult:
         """A segment contains one or more Selectors"""
@@ -402,23 +386,6 @@ class JPathEvaluator:
         input_node: VNode
         for input_node in input_nodelist:
             output_nodelist.extend(self._children_of(input_node))
-            # if not isinstance(input_node.jvalue, (*JSON_ARRAY_TYPES, *JSON_OBJECT_TYPES) ):
-            #     continue  # Nothing is selected for JSON primitives.
-            # if isinstance(input_node.jvalue, JSON_ARRAY_TYPES):
-            #     # copy all list elements to output_nodelist
-            #     jpath = input_node.jpath
-            #     jvalue_list = input_node.jvalue
-            #     for index, child_element in enumerate(jvalue_list):
-            #         new_node = VNode( NormalizedJPath( f"{jpath}[{index}]" ), child_element)
-            #         output_nodelist.append(new_node)
-            #
-            # elif isinstance(input_node.jvalue, JSON_OBJECT_TYPES):
-            #     # copy all dict member values to output_nodelist
-            #     jpath = input_node.jpath
-            #     jvalue_dict = input_node.jvalue
-            #     for member_name, member_value in jvalue_dict.items():
-            #         new_node = VNode( NormalizedJPath( f"{jpath}['{member_name}']" ), member_value)
-            #         output_nodelist.append(new_node)
         
         return rt_res.success(VNodeList(output_nodelist))
     
@@ -443,25 +410,7 @@ class JPathEvaluator:
             jvalue_list = input_node.jvalue
             length:int = len(jvalue_list)
             if length == 0 or current_slice_obj.step == 0: continue
-            # see 2.3.4.2.2. Normative Semantics, pg 23, RFC 9535
-            # step_normal:   int = self._step if self._step is not None else JPathBNFConstants.instance().STEP_DEFAULT
-            # start_default: int = 0      if step_normal >= 0 else  length - 1
-            # end_default:   int = length if step_normal >= 0 else -length - 1
-            #
-            # nindxs = slice_bounds(self._start or start_default,
-            #                                   self._end or end_default,
-            #                                   step_normal,
-            #                                   length)
-            # #todo if we are creating slices of multiple arrays of the same size, we might want to cache these slice values
-            # #todo investigate just using self instance slice values  with a Python slice object. It might implement
-            # # the same normalization algorithm as above, but it should be faster since it's in C code
-            # result_elements = input_node[slice(nindxs.lower, nindxs.upper, nindxs.step)]
-            # # each of these results is a separate result node value, which is protentially another list or dict
-            
-            # Define the slice object using attributes from the node
-            # self._start, self._end can be None. self._step can be None (defaulting to 1).
-            # current_slice_obj = node.slice_op
-            # Get the actual start, stop, and step for this array's length
+            # See 2.3.4.2.2. Normative Semantics, pg 23, RFC 9535
             actual_start, actual_stop, actual_step = current_slice_obj.indices(length)
             # Iterate using the original indices
             for original_idx in range(actual_start, actual_stop, actual_step):
@@ -630,7 +579,7 @@ class JPathEvaluator:
 
 
     def visit_RelativeQueryNode(self, node: RelativeQueryNode, context: Context) -> RuntimeResult:
-        """Return the resulting output  VNodeList in RuntimeResult.value
+        """Return the resulting output VNodeList in RuntimeResult.value
         
         """
         rt_res = RuntimeResult()
@@ -643,9 +592,8 @@ class JPathEvaluator:
         input_nodelist: VNodeList = VNodeList([current_node])
     
         if segments.is_empty():
-            # no segments in the relative query, so just return the current node
+            # no segments in the relative query, so we just return the current node
             return rt_res.success(input_nodelist)
-            #return rt_res.success(BooleanValue.value_for(True).set_context(context).set_pos(node.position.copy()))
         
         """Evaluating all these segments in a chain from input-> output VNodeLists result in a final output nodelist.
         This node list is evaluated for truthiness as an existence test or to compare to another logical_expr
@@ -661,17 +609,9 @@ class JPathEvaluator:
                 continue  # todo should we break here instead of just continue? What do we get by skipping a segment?
             if not isinstance(segment_output, VNodeList):
                 raise TypeError(f"visit_RelativeQueryNode: visit seg_node returned Unsupported value type '{type(segment_output)}'")
-            input_nodelist = segment_output   # output of this segment becomes input for next segment
+            input_nodelist = segment_output   # output of this segment becomes input for the next segment
         
-        # apply existence test here and return BooleanValue
-        #  we know that segments is not empty here, so this is safe:
-        ouput_pos = Position(node.position.text, segments[0].position.start, segments[-1].position.end)  # type: ignore
         return rt_res.success(segment_output)
-        #
-        # if segment_output:
-        #     return rt_res.success(BooleanValue.value_for(True).set_context(context).set_pos(ouput_pos))
-        # else:
-        #     return rt_res.success(BooleanValue.value_for(False).set_context(context).set_pos(ouput_pos))
 
 
     def visit_RelativeSingularQueryNode(self, node: RelativeSingularQueryNode, context: Context) -> RuntimeResult:
@@ -681,7 +621,7 @@ class JPathEvaluator:
         current_node: VNode = context.get_symbol(CURRENT_NODE_KEY)
         segments = node.segments
         if segments.is_empty():
-            # if no segments we just return the current node
+            # if no segments, we just return the current node
             return rt_res.success(VNodeList([current_node]))
         
         input_nodelist: VNodeList = VNodeList([current_node])
@@ -692,7 +632,7 @@ class JPathEvaluator:
             seg_context.set_symbol(SEGMENT_INPUT_NODELIST_KEY, input_nodelist)
             segment_ouput = rt_res.register(self.visit(seg_node, seg_context))
             if rt_res.error: return rt_res # todo we're not supposd to raise errors, just ignore this segment?
-            input_nodelist = segment_ouput   # output of this segment becomes input for next segment
+            input_nodelist = segment_ouput   # output of this segment becomes input for the next segment
         
         return rt_res.success(segment_ouput)
         
@@ -704,10 +644,9 @@ class JPathEvaluator:
         if rt_res.error: return rt_res
         segments = node.segments
         if segments.is_empty():
-            # if no segments we just return the current node
+            # if no segments, we just return the current node
             return rt_res.success(input_nodelist)
         
-        #input_nodelist: VNodeList = VNodeList([root_value])
         segment_ouput: VNodeList = input_nodelist  # default, in case there are no segments
         for seg_node in node.segments:
             # creating a new Context provides a local scope for the segment visit
@@ -715,7 +654,7 @@ class JPathEvaluator:
             seg_context.set_symbol(SEGMENT_INPUT_NODELIST_KEY, input_nodelist)
             segment_ouput = rt_res.register(self.visit(seg_node, seg_context))
             if rt_res.error: return rt_res # todo we're not supposd to raise errors, just ignore this segment?
-            input_nodelist = segment_ouput   # output of this segment becomes input for next segment
+            input_nodelist = segment_ouput   # output of this segment becomes input for the next segment
         
         return rt_res.success(segment_ouput)
 
@@ -725,19 +664,19 @@ class JPathEvaluator:
         if not isinstance(node, FunctionCallNode):
             raise TypeError(f"Expected FunctionCallNode, got '{type(node)}'")
         
-        # we must evaluate each argument, and call the function's eval method for it.
+        # we must evaluate each argument and call the function's eval method for it.
         func_args = node.func_args
         arg: FunctionArgument
         func_name = node.func_node.func_name
         func_context = Context(f"{func_name}()", context, context.parent_entry_pos)
-        # we could add the argument to the context and let the function retrieve values from the context. but, here
+        # we could add the argument to the context and let the function retrieve values from the context. but here
         # we just call directly with the kwargs dict.
         call_args: list[Any] = []
         for fa in func_args:
             arg = cast(FunctionArgument, fa)
             arg_value = rt_res.register(self.visit(arg.arg_node, func_context))
             if rt_res.error: raise ValueError(rt_res.error)
-            # we need logic to translate the fa to a compatible type for the function. Some functions need a VNodeList,
+            # We need logic to translate the fa to a compatible type for the function. Some functions need a VNodeList,
             # some just want the singular value from the VNode in a 1-item VNodeList.
             
             call_args.append(arg_value)
@@ -751,8 +690,8 @@ class JPathEvaluator:
         func_value = node.func_node.eval(**kwargs)  # method call happens here
         
         return rt_res.success(func_value)
-
-
+    
+    # noinspection GrazieInspection
     def visit_UnaryOpNode(self, node: UnaryOpNode, context: Context) -> RuntimeResult:
         """The only use of this node is to invert the truth value of a logical_expr in a test_expr and paren_expr:
         
@@ -801,10 +740,10 @@ class JPathEvaluator:
                                 context
                               )
                 return None, err
-        # Check if it's a EvaluatorValue wrapper (like NumberValue) or a raw JSON_ValueType
+        # Check if it's an EvaluatorValue wrapper (like NumberValue) or a raw JSON_ValueType
         elif isinstance(eval_result, (EvaluatorValue, *JSON_VALUE_TYPES)):
             return eval_result, None
-        # If the result of a sub-expression was already a LogicalType (e.g. from another comparison or NOT)
+        # If the result of a sub-expression was already a LogicalType (e.g., from another comparison or NOT)
         elif isinstance(eval_result, LogicalType):
             # For comparison, we'd use its underlying bool if comparing against another bool.
             # For AND/OR, we use LogicalType directly.
@@ -861,8 +800,8 @@ class JPathEvaluator:
     
     def visit_RepetitionNode(self, node: RepetitionNode, context: Context) -> RuntimeResult:
         """We use a RepetitionNode for evaluating logical_and_expr and logical_or_expr in this context. This is to
-        avoid having to create another ASTNode for each, however, that might make more sense. This is in-progress.
-        Also, we implement these as a list of nodes instead of nested binary nodes so we can short circuit evaluation
+        avoid having to create another ASTNode for each, however, that might make more sense. This is in progress.
+        Also, we implement these as a list of nodes instead of nested binary nodes so we can short-circuit evaluation
         at the top level of node evaluation.
         """
         rt_res = RuntimeResult()
@@ -894,6 +833,7 @@ class JPathEvaluator:
                     break  # short circuit
             else:
                 current_bool_result = current_bool_result  or bool_for_node if current_bool_result else bool_for_node
+                # noinspection PySimplifyBooleanCheck
                 if current_bool_result == True:
                     break  # short circuit
         
@@ -945,7 +885,7 @@ class JPathEvaluator:
         if not isinstance(node, IdentifierNode):
             raise TypeError(f"Unsupported type '{type(node.node_type)}', expected IdentifierNode")
         
-        # we have to add quotes, because the StringValue expects parsed strings to be quoted,
+        # we have to add quotes because the StringValue expects parsed strings to be quoted,
         # thus it removes the first and last characters of the argument string when saving the string's value.
         str_value = f"'{node.value}'"
         id_str = StringValue(str_value).set_context(context).set_pos(node.position)
@@ -966,7 +906,7 @@ class SliceBounds(NamedTuple):
 
 
 def normalize_slice_parameter(slice_parameter: int, array_len: int ) -> int:
-    """Slice expreession parameters `start` and `end` are not directly usable as slice bounds and must first be
+    """Slice expression parameters `start` and `end` are not directly usable as slice bounds and must first be
     normalized. (RCF 9535 page 23).
 
     """

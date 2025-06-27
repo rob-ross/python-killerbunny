@@ -5,3 +5,5 @@
 #  Created by: Robert L. Ross
 #
 
+# In killerbunny/__init__.py
+"""KillerBunny package for JSONPath Query evaluation."""

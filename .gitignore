@@ -1,3 +1,5 @@
+# Reminder: .gitignore does not support comments at the end of a line.
+
 # Python bytecode and caches
 __pycache__/
 *.py[cod]
@@ -32,17 +34,20 @@ coverage.xml
 # IDEs / Editors
 ### IntelliJ IDEA ###
 out/
-.idea/          # JetBrains IDEs (PyCharm, IntelliJ)
-.iml
-.vscode/        # Visual Studio Code (can sometimes share launch.json/settings.json if desired)
-*.sublime-*     # Sublime Text
-nbproject/      # NetBeans
-*.swp           # Vim swap files
-*~              # Backup files (common convention)
+.idea/
+*.iml
+*.iws
+*.ipr
+
+.vscode/
+*.sublime-*
+nbproject/
+*.swp
+*~
 
 # Operating System files
-.DS_Store       # macOS
-Thumbs.db       # Windows
+.DS_Store
+Thumbs.db
 
 
 # Secrets (use with caution, prefer dedicated secret management)
@@ -53,14 +58,8 @@ Thumbs.db       # Windows
 *.pem
 credentials.*
 secrets.*
-*.env         # If used for secrets
+*.env
 
 # Log files
 *.log
 logs/
-
-
-# local data and config home directory
-wordspy_home/
-
-

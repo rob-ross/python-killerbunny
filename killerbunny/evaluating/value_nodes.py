@@ -11,8 +11,8 @@ These are nodes used to return query results from the evaluator. They are distin
 """
 import json
 import logging
-from typing import Iterator, Generator, override
-
+from typing import Iterator, Generator
+from typing import override  # type: ignore
 from killerbunny.evaluating.evaluator_types import EvaluatorValue, NormalizedJPath
 from killerbunny.parsing.helper import unescape_string_content
 from killerbunny.shared.json_type_defs import JSON_ValueType
@@ -70,6 +70,10 @@ class VNode:
         repr_str = f"VNode(jpath={self._jpath}, json_value={repr(self._json_value)})"
         return repr_str
     
+    def __str__(self) -> str:
+        return f"{self._jpath.jpath_str}, {self._json_value}"
+    
+    
     @override
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, VNode):
@@ -112,9 +116,7 @@ class VNode:
             raise TypeError(f"VNode instances with unhashable jvalue (type: {type(self._json_value).__name__}) cannot be hashed.")
 
 
-
-
-
+# noinspection SpellCheckingInspection
 class VNodeList:
     """This class holds a list of VNodes: normalized JSON Paths and the JSON values to which they refer.
     It functions as a list-like container, supporting common sequence operations such as iteration
@@ -140,8 +142,8 @@ class VNodeList:
     def node_list(self) -> list[VNode]:
         """Return the list of VNodes managed by this VNodeList.
         
-        Note: this class is itself a list-like container, so you can also use this VNodeList  instance itself
-         in iteration contexts  without needing to call this method.
+        Note: this class is itself a list-like container, so you can also use this VNodeList instance itself
+         in iteration contexts without needing to call this method.
         """
         return self._node_list
     
@@ -169,7 +171,7 @@ class VNodeList:
 
     def pretty_print(self, flag: str = '') -> None:
         """Display the VNodes of this instance in a more user-friendly format, one line per VNode.
-        If flag =='-l', pretty prints the value with json.dumps(jvalue, indent==2)"""
+        If `flag` == '-l', pretty prints the value with json.dumps(jvalue, indent==2)"""
         if len(self) == 0 :
             print("VNodeList is empty.")
             return
@@ -199,6 +201,7 @@ class VNodeList:
     def paths(self) -> Iterator[NormalizedJPath]:
         """Return an iterator over the NormalizedJpath paths of this VNodeList. """
         def paths_generator() -> Generator[NormalizedJPath, None, None]:
+            vnode: VNode
             for vnode in self:
                 yield vnode.jpath
         return paths_generator()
@@ -249,10 +252,6 @@ class VNodeList:
         """Remove all items from the list."""
         self._node_list.clear()
     
-
-# # Defined here instead of json_type_defs.py to prefent circular reference
-# NodesType: TypeAlias = VNodeList
-
     
     
 class NumberValue(EvaluatorValue):
@@ -263,8 +262,8 @@ class NumberValue(EvaluatorValue):
         super().__init__()
         self._value = value
     
-    @override
     @property
+    @override
     def value(self) -> int | float:
         return self._value
     
@@ -288,8 +287,8 @@ class StringValue(EvaluatorValue):
         member_name = unescape_string_content(content_to_unescape)
         self._value = member_name
         
-    @override
     @property
+    @override
     def value(self) -> str:
         return self._value
         
@@ -315,9 +314,10 @@ class BooleanValue(EvaluatorValue):
         else:
             return BooleanValue(False)
         
-    @override
     @property
+    @override
     def value(self) -> bool:
+        """Return the internal boolean value."""
         return self._value
     
     def __repr__(self) -> str:
@@ -333,11 +333,11 @@ class BooleanValue(EvaluatorValue):
     @override
     def __eq__(self, other: object) -> bool:
         """
-        Compares this BooleanValue for equality with another object.
+        Compare this BooleanValue for equality with another object.
 
-        - If 'other' is a BooleanValue, compares their underlying boolean states.
-        - If 'other' is a Python bool, compares this BooleanValue's state to it.
-        - For any other type, compares this BooleanValue's state to the
+        - If 'other' is a BooleanValue, compare their underlying boolean states.
+        - If 'other' is a Python bool, compare this BooleanValue's state to it.
+        - For any other type, compare this BooleanValue's state to the
           truthiness of 'other' (i.e., bool(other)).
         
         Returns True if they are considered equal under these rules, False otherwise.
@@ -351,6 +351,7 @@ class BooleanValue(EvaluatorValue):
         
         # For any other type, compare our boolean value to the truthiness of 'other'.
         # This fulfills "compare itself to any type that supports the concept of 'truthiness'".
+        # noinspection PyBroadException
         try:
             # Compare our internal boolean state to the truthiness of the other object.
             # Python's bool() will use __bool__ if available, then __len__,
@@ -365,6 +366,7 @@ class BooleanValue(EvaluatorValue):
         
     def negate(self) -> 'BooleanValue':
         """Returns the logically opposite BooleanValue instance."""
+        # noinspection PySimplifyBooleanCheck
         if self._value  == True:
             return BooleanValue(False).set_pos(self.position).set_context(self.context)
         else:  # self.value == False here
@@ -376,15 +378,15 @@ class NullValue(EvaluatorValue):
     def __init__(self) -> None:
         super().__init__()
     
-    @override
+    def __str__(self) -> str:
+        return "null"
+    
     @property
+    @override
     def value(self) -> None:
         return None
     
     def __repr__(self) -> str:
         return f"NullValue(value={None})"
-    
-    def __str__(self) -> str:
-        return "null"
     
     
