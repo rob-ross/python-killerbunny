@@ -1,14 +1,20 @@
 ### This is the README for killerbunny
 
-Home of another JSON Path query library. But better. Stronger. Faster. uhm...
+# RFC 9535 JSONPath: Query Expressions for JSON
 
-At the very least, very much another. 
+Home of another JSON Path query library. But better. Stronger. Faster...
+
+uhm...
+
+Well, at the very least, very much much another. 
 
 This project implements RFC 9535. It passes the jsonpath-compliance-test-suite at :
 
 https://github.com/jsonpath-standard/jsonpath-compliance-test-suite
 
 with the exception of some I-Regexp patterns (RFC 9485) and whitespace tests.
+
+It has no external dependencies other than PyTest for running the unit tests. 
 
 As it is a Python package, it uses the standard re module for processing regular expression patterns via the search() and match() function extensions. It is also lenient in white space handling.
 
