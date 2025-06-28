@@ -17,7 +17,8 @@ from killerbunny.shared.constants import UTF8, ONE_MEBIBYTE
 from killerbunny.shared.errors import Error
 
 _MODULE_DIR = Path(__file__).parent
-_LTC_FILE_PATH = _MODULE_DIR / "lexer_tests.json"
+LEXER_TEST_CASES_FILENAME = "lexer_test_cases.json"
+_LTC_FILE_PATH = _MODULE_DIR / LEXER_TEST_CASES_FILENAME
 _FILE_LIST = [ _LTC_FILE_PATH,]
 
 @dataclass(frozen=True, slots=True)

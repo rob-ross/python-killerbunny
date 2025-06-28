@@ -115,6 +115,8 @@ def generate_lexer_test_cases(path_tokens: list[ tuple[ str, str] ],
 FRAGILE_TEST_DIR = _MODULE_DIR / '../../tests/'
 FRAGILE_TEST_DIR_PATH = Path(FRAGILE_TEST_DIR)
 
+LEXER_TEST_CASES_FILENAME = "lexer_test_cases.json"
+
 def process_lexer_paths(input_dir: Path, suffix: str, generate_test_file: bool = False, quiet:bool = False)-> None:
     """Given a directory path and a file suffix, run generate_lexer_path_tokens() for each file in the directory
     that ends with `suffix`. No directory recursion is done. 
@@ -162,7 +164,7 @@ def process_lexer_paths(input_dir: Path, suffix: str, generate_test_file: bool =
                 
                 
     if generate_test_file and test_cases:
-        outfile_path = output_dir / "lexer_tests.json"
+        outfile_path = output_dir / LEXER_TEST_CASES_FILENAME
         if not quiet: print(f"Generating test file '{outfile_path}'")
         generated_files.append( outfile_path.name )
         tests_list: list[dict[str, Any]] = []
