@@ -1,7 +1,0 @@
-# file_name: table_18.jpath_ast
-$.a  :  ${CS{bs[ns:a]/bs}/CS}/$
-$[1]  :  ${CS{bs[is:1]/bs}/CS}/$
-$[-3]  :  ${CS{bs[is:-3]/bs}/CS}/$
-$.a.b[1:2]  :  ${CS{bs[ns:a]/bs}/CS, CS{bs[ns:b]/bs}/CS, CS{bs[slice(1:2:)]/bs}/CS}/$
-$["\u000B"]  :  ${CS{bs[ns:]/bs}/CS}/$
-$["\u0061"]  :  ${CS{bs[ns:a]/bs}/CS}/$

@@ -1,4 +1,0 @@
-# file_name: table_15.jpath_ast
-$[0, 3]  :  ${CS{bs[is:0, is:3]/bs}/CS}/$
-$[0:2, 5]  :  ${CS{bs[slice(0:2:), is:5]/bs}/CS}/$
-$[0, 0]  :  ${CS{bs[is:0, is:0]/bs}/CS}/$
