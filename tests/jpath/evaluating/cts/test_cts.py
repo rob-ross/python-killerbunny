@@ -99,11 +99,6 @@ class CTSTestData:
 
 _MODULE_DIR = Path(__file__).parent
 _CTS_FILE_PATH = _MODULE_DIR / "cts.json"
-# todo when code-complete we can removed _FILE_LIST or just use cts.json which has all the tests.
-# they are separated here for the moment as some features have not been implemented yet and the entire file of test
-# cases fails, like functions.
-# _FILE_LIST = ["basic.json", "index_selector.json", "name_selector.json", "slice_selector.json", "filter.json"]
-# _FILE_LIST = [ "functions/count.json", "functions/length.json",  "functions/match.json", "functions/search.json", 'functions/value.json']
 _FILE_LIST = [ "cts.json",]
 
 def data_loader() -> list[CTSTestData]:
