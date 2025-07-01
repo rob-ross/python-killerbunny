@@ -12,7 +12,7 @@ from typing import TypeAlias, Union, Sequence, Mapping
 JSON_PrimitiveType:  TypeAlias = Union[ str, int, float, bool, None ]  # RFC 8259, pg 3 calls these "primitive types"
 JSON_ArrayType:      TypeAlias = Sequence[ 'JSON_ValueType' ]
 JSON_ObjectType:     TypeAlias = Mapping[ str, 'JSON_ValueType']
-JSON_StructuredType: TypeAlias = Union[ JSON_ArrayType, JSON_ObjectType]  #RFC 8259, pg 3 calls these "structured types"
+JSON_StructuredType: TypeAlias = Union[ 'JSON_ArrayType', 'JSON_ObjectType']  #RFC 8259, pg 3 calls these "structured types"
 JSON_ValueType:      TypeAlias = Union[ JSON_PrimitiveType, JSON_ArrayType, JSON_ObjectType]
 
 # For use in isinstance(), e.g., if isinstance(foo, JSON_xxx_TYPES):
