@@ -7,7 +7,8 @@
             "parser_ast": "${CS{bs[ns:store]/bs}/CS, CS{bs[ns:book]/bs}/CS, CS{bs[*]/bs}/CS, CS{bs[ns:author]/bs}/CS}/$",
             "source_file_name": "table_02",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_02-$..author",
@@ -15,7 +16,8 @@
             "parser_ast": "${DS{bs[ns:author]/bs}/DS}/$",
             "source_file_name": "table_02",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_02-$.store.*",
@@ -23,7 +25,8 @@
             "parser_ast": "${CS{bs[ns:store]/bs}/CS, CS{bs[*]/bs}/CS}/$",
             "source_file_name": "table_02",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_02-$.store..price",
@@ -31,7 +34,8 @@
             "parser_ast": "${CS{bs[ns:store]/bs}/CS, DS{bs[ns:price]/bs}/DS}/$",
             "source_file_name": "table_02",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_02-$..book[2]",
@@ -39,7 +43,8 @@
             "parser_ast": "${DS{bs[ns:book]/bs}/DS, CS{bs[is:2]/bs}/CS}/$",
             "source_file_name": "table_02",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_02-$..book[2].author",
@@ -47,7 +52,8 @@
             "parser_ast": "${DS{bs[ns:book]/bs}/DS, CS{bs[is:2]/bs}/CS, CS{bs[ns:author]/bs}/CS}/$",
             "source_file_name": "table_02",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_02-$..book[2].publisher",
@@ -55,7 +61,8 @@
             "parser_ast": "${DS{bs[ns:book]/bs}/DS, CS{bs[is:2]/bs}/CS, CS{bs[ns:publisher]/bs}/CS}/$",
             "source_file_name": "table_02",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_02-$..book[-1]",
@@ -63,7 +70,8 @@
             "parser_ast": "${DS{bs[ns:book]/bs}/DS, CS{bs[is:-1]/bs}/CS}/$",
             "source_file_name": "table_02",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_02-$..book[0,1]",
@@ -71,7 +79,8 @@
             "parser_ast": "${DS{bs[ns:book]/bs}/DS, CS{bs[is:0, is:1]/bs}/CS}/$",
             "source_file_name": "table_02",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_02-$..book[:2]",
@@ -79,7 +88,8 @@
             "parser_ast": "${DS{bs[ns:book]/bs}/DS, CS{bs[slice(:2:)]/bs}/CS}/$",
             "source_file_name": "table_02",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_02-$..book[?@.isbn]",
@@ -87,7 +97,8 @@
             "parser_ast": "${DS{bs[ns:book]/bs}/DS, CS{bs[fs{?@ segments<CS{bs[ns:isbn]/bs}/CS>}/fs]/bs}/CS}/$",
             "source_file_name": "table_02",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_02-$..book[?@.price<10]",
@@ -95,7 +106,8 @@
             "parser_ast": "${DS{bs[ns:book]/bs}/DS, CS{bs[fs{?comp_expr(@{sqs{ns:price}}/@, <, 10)}/fs]/bs}/CS}/$",
             "source_file_name": "table_02",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_02-$..*",
@@ -103,7 +115,8 @@
             "parser_ast": "${DS{bs[*]/bs}/DS}/$",
             "source_file_name": "table_02",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_03-$",
@@ -111,7 +124,8 @@
             "parser_ast": "$",
             "source_file_name": "table_03",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_05-$.o['j j']",
@@ -119,7 +133,8 @@
             "parser_ast": "${CS{bs[ns:o]/bs}/CS, CS{bs[ns:j j]/bs}/CS}/$",
             "source_file_name": "table_05",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_05-$.o['j j']['k.k']",
@@ -127,7 +142,8 @@
             "parser_ast": "${CS{bs[ns:o]/bs}/CS, CS{bs[ns:j j]/bs}/CS, CS{bs[ns:k.k]/bs}/CS}/$",
             "source_file_name": "table_05",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_05-$.o[\"j j\"][\"k.k\"]",
@@ -135,7 +151,8 @@
             "parser_ast": "${CS{bs[ns:o]/bs}/CS, CS{bs[ns:j j]/bs}/CS, CS{bs[ns:k.k]/bs}/CS}/$",
             "source_file_name": "table_05",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_05-$['o']['j j']['k.k']",
@@ -143,7 +160,8 @@
             "parser_ast": "${CS{bs[ns:o]/bs}/CS, CS{bs[ns:j j]/bs}/CS, CS{bs[ns:k.k]/bs}/CS}/$",
             "source_file_name": "table_05",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_05-$[\"'\"][\"@\"]",
@@ -151,7 +169,8 @@
             "parser_ast": "${CS{bs[ns:']/bs}/CS, CS{bs[ns:@]/bs}/CS}/$",
             "source_file_name": "table_05",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_06-$[*]",
@@ -159,7 +178,8 @@
             "parser_ast": "${CS{bs[*]/bs}/CS}/$",
             "source_file_name": "table_06",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_06-$.o[*]",
@@ -167,7 +187,8 @@
             "parser_ast": "${CS{bs[ns:o]/bs}/CS, CS{bs[*]/bs}/CS}/$",
             "source_file_name": "table_06",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_06-$.o[*]",
@@ -175,7 +196,8 @@
             "parser_ast": "${CS{bs[ns:o]/bs}/CS, CS{bs[*]/bs}/CS}/$",
             "source_file_name": "table_06",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_06-$.o[*, *]",
@@ -183,7 +205,8 @@
             "parser_ast": "${CS{bs[ns:o]/bs}/CS, CS{bs[*, *]/bs}/CS}/$",
             "source_file_name": "table_06",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_06-$.a[*]",
@@ -191,7 +214,8 @@
             "parser_ast": "${CS{bs[ns:a]/bs}/CS, CS{bs[*]/bs}/CS}/$",
             "source_file_name": "table_06",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_07-$[1]",
@@ -199,7 +223,8 @@
             "parser_ast": "${CS{bs[is:1]/bs}/CS}/$",
             "source_file_name": "table_07",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_07-$[-2]",
@@ -207,7 +232,8 @@
             "parser_ast": "${CS{bs[is:-2]/bs}/CS}/$",
             "source_file_name": "table_07",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_09-$[1:3]",
@@ -215,7 +241,8 @@
             "parser_ast": "${CS{bs[slice(1:3:)]/bs}/CS}/$",
             "source_file_name": "table_09",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_09-$[5:]",
@@ -223,7 +250,8 @@
             "parser_ast": "${CS{bs[slice(5::)]/bs}/CS}/$",
             "source_file_name": "table_09",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_09-$[1:5:2]",
@@ -231,7 +259,8 @@
             "parser_ast": "${CS{bs[slice(1:5:2)]/bs}/CS}/$",
             "source_file_name": "table_09",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_09-$[5:1:-2]",
@@ -239,7 +268,8 @@
             "parser_ast": "${CS{bs[slice(5:1:-2)]/bs}/CS}/$",
             "source_file_name": "table_09",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_09-$[::-1]",
@@ -247,7 +277,8 @@
             "parser_ast": "${CS{bs[slice(::-1)]/bs}/CS}/$",
             "source_file_name": "table_09",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-$.absent1 == $.absent2",
@@ -255,7 +286,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got == at position 11: $.absent1 ^==^ $.absent2"
+            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got == at position 11: $.absent1 ^==^ $.absent2",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-$.absent1 <= $.absent2",
@@ -263,7 +295,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got <= at position 11: $.absent1 ^<=^ $.absent2"
+            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got <= at position 11: $.absent1 ^<=^ $.absent2",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-$.absent == 'g'",
@@ -271,7 +304,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got == at position 10: $.absent ^==^ 'g'"
+            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got == at position 10: $.absent ^==^ 'g'",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-$.absent1 != $.absent2",
@@ -279,7 +313,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got != at position 11: $.absent1 ^!=^ $.absent2"
+            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got != at position 11: $.absent1 ^!=^ $.absent2",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-$.absent != 'g'",
@@ -287,7 +322,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got != at position 10: $.absent ^!=^ 'g'"
+            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got != at position 10: $.absent ^!=^ 'g'",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-1 <= 2",
@@ -295,7 +331,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Expected '$', got INT at position 1: ^1^ <= 2"
+            "err_msg": "Invalid Syntax: start: Expected '$', got INT at position 1: ^1^ <= 2",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-1> 2",
@@ -303,7 +340,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Expected '$', got INT at position 1: ^1^> 2"
+            "err_msg": "Invalid Syntax: start: Expected '$', got INT at position 1: ^1^> 2",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-13 == '13'",
@@ -311,7 +349,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Expected '$', got INT at position 1: ^13^ == '13'"
+            "err_msg": "Invalid Syntax: start: Expected '$', got INT at position 1: ^13^ == '13'",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-'a' <= 'b'",
@@ -319,7 +358,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Expected '$', got STRING at position 1: ^'a'^ <= 'b'"
+            "err_msg": "Invalid Syntax: start: Expected '$', got STRING at position 1: ^'a'^ <= 'b'",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-'a' > 'b'",
@@ -327,7 +367,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Expected '$', got STRING at position 1: ^'a'^ > 'b'"
+            "err_msg": "Invalid Syntax: start: Expected '$', got STRING at position 1: ^'a'^ > 'b'",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-$.obj == $.arr",
@@ -335,7 +376,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got == at position 7: $.obj ^==^ $.arr"
+            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got == at position 7: $.obj ^==^ $.arr",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-$.obj != $.arr",
@@ -343,7 +385,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got != at position 7: $.obj ^!=^ $.arr"
+            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got != at position 7: $.obj ^!=^ $.arr",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-$.obj == $.obj",
@@ -351,7 +394,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got == at position 7: $.obj ^==^ $.obj"
+            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got == at position 7: $.obj ^==^ $.obj",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-$.obj != $.obj",
@@ -359,7 +403,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got != at position 7: $.obj ^!=^ $.obj"
+            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got != at position 7: $.obj ^!=^ $.obj",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-$.arr == $.arr",
@@ -367,7 +412,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got == at position 7: $.arr ^==^ $.arr"
+            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got == at position 7: $.arr ^==^ $.arr",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-$.arr != $.arr",
@@ -375,7 +421,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got != at position 7: $.arr ^!=^ $.arr"
+            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got != at position 7: $.arr ^!=^ $.arr",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-$.obj == 17",
@@ -383,7 +430,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got == at position 7: $.obj ^==^ 17"
+            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got == at position 7: $.obj ^==^ 17",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-$.obj != 17",
@@ -391,7 +439,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got != at position 7: $.obj ^!=^ 17"
+            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got != at position 7: $.obj ^!=^ 17",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-$.obj <= $.arr",
@@ -399,7 +448,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got <= at position 7: $.obj ^<=^ $.arr"
+            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got <= at position 7: $.obj ^<=^ $.arr",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-$.obj < $.arr",
@@ -407,7 +457,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got < at position 7: $.obj ^<^ $.arr"
+            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got < at position 7: $.obj ^<^ $.arr",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-$.obj <= $.obj",
@@ -415,7 +466,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got <= at position 7: $.obj ^<=^ $.obj"
+            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got <= at position 7: $.obj ^<=^ $.obj",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-$.arr <= $.arr",
@@ -423,7 +475,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got <= at position 7: $.arr ^<=^ $.arr"
+            "err_msg": "Invalid Syntax: start: Parser completed before EOF. Expected '.', '[' or '..', got <= at position 7: $.arr ^<=^ $.arr",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-1 <= $.arr",
@@ -431,7 +484,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Expected '$', got INT at position 1: ^1^ <= $.arr"
+            "err_msg": "Invalid Syntax: start: Expected '$', got INT at position 1: ^1^ <= $.arr",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-1 >= $.arr",
@@ -439,7 +493,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Expected '$', got INT at position 1: ^1^ >= $.arr"
+            "err_msg": "Invalid Syntax: start: Expected '$', got INT at position 1: ^1^ >= $.arr",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-1 > $.arr",
@@ -447,7 +502,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Expected '$', got INT at position 1: ^1^ > $.arr"
+            "err_msg": "Invalid Syntax: start: Expected '$', got INT at position 1: ^1^ > $.arr",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-1 < $.arr",
@@ -455,7 +511,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Expected '$', got INT at position 1: ^1^ < $.arr"
+            "err_msg": "Invalid Syntax: start: Expected '$', got INT at position 1: ^1^ < $.arr",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-true <= true",
@@ -463,7 +520,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Expected '$', got true at position 1: ^true^ <= true"
+            "err_msg": "Invalid Syntax: start: Expected '$', got true at position 1: ^true^ <= true",
+            "subparse_production": null
         },
         {
             "test_name": "table_11-true > true",
@@ -471,7 +529,8 @@
             "parser_ast": "",
             "source_file_name": "table_11",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: start: Expected '$', got true at position 1: ^true^ > true"
+            "err_msg": "Invalid Syntax: start: Expected '$', got true at position 1: ^true^ > true",
+            "subparse_production": null
         },
         {
             "test_name": "table_12-$.a[?@.b == 'kilo']",
@@ -479,7 +538,8 @@
             "parser_ast": "${CS{bs[ns:a]/bs}/CS, CS{bs[fs{?comp_expr(@{sqs{ns:b}}/@, ==, kilo)}/fs]/bs}/CS}/$",
             "source_file_name": "table_12",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_12-$.a[?(@.b == 'kilo')]",
@@ -487,7 +547,8 @@
             "parser_ast": "${CS{bs[ns:a]/bs}/CS, CS{bs[fs{?comp_expr(@{sqs{ns:b}}/@, ==, kilo)}/fs]/bs}/CS}/$",
             "source_file_name": "table_12",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_12-$.a[?@>3.5]",
@@ -495,7 +556,8 @@
             "parser_ast": "${CS{bs[ns:a]/bs}/CS, CS{bs[fs{?comp_expr(@, >, 3.5)}/fs]/bs}/CS}/$",
             "source_file_name": "table_12",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_12-$.a[?@.b]",
@@ -503,7 +565,8 @@
             "parser_ast": "${CS{bs[ns:a]/bs}/CS, CS{bs[fs{?@ segments<CS{bs[ns:b]/bs}/CS>}/fs]/bs}/CS}/$",
             "source_file_name": "table_12",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_12-$[?@.*]",
@@ -511,7 +574,8 @@
             "parser_ast": "${CS{bs[fs{?@ segments<CS{bs[*]/bs}/CS>}/fs]/bs}/CS}/$",
             "source_file_name": "table_12",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_12-$[?@[?@.b]]",
@@ -519,7 +583,8 @@
             "parser_ast": "${CS{bs[fs{?@ segments<CS{bs[fs{?@ segments<CS{bs[ns:b]/bs}/CS>}/fs]/bs}/CS>}/fs]/bs}/CS}/$",
             "source_file_name": "table_12",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_12-$.o[?@<3, ?@<3]",
@@ -527,7 +592,8 @@
             "parser_ast": "${CS{bs[ns:o]/bs}/CS, CS{bs[fs{?comp_expr(@, <, 3)}/fs, fs{?comp_expr(@, <, 3)}/fs]/bs}/CS}/$",
             "source_file_name": "table_12",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_12-$.a[?@<2 || @.b == \"k\"]",
@@ -535,7 +601,26 @@
             "parser_ast": "${CS{bs[ns:a]/bs}/CS, CS{bs[fs{?logical_or_expr[comp_expr(@, <, 2), comp_expr(@{sqs{ns:b}}/@, ==, k)]/logical_or_expr}/fs]/bs}/CS}/$",
             "source_file_name": "table_12",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
+        },
+        {
+            "test_name": "table_12-$.a[?match(@.b, \"[jk]\")]",
+            "json_path": "$.a[?match(@.b, \"[jk]\")]",
+            "parser_ast": "${CS{bs[ns:a]/bs}/CS, CS{bs[fs{?match(@ segments<CS{bs[ns:b]/bs}/CS>, [jk])->LogicalType}/fs]/bs}/CS}/$",
+            "source_file_name": "table_12",
+            "is_invalid": false,
+            "err_msg": "",
+            "subparse_production": null
+        },
+        {
+            "test_name": "table_12-$.a[?search(@.b, \"[jk]\")]",
+            "json_path": "$.a[?search(@.b, \"[jk]\")]",
+            "parser_ast": "${CS{bs[ns:a]/bs}/CS, CS{bs[fs{?search(@ segments<CS{bs[ns:b]/bs}/CS>, [jk])->LogicalType}/fs]/bs}/CS}/$",
+            "source_file_name": "table_12",
+            "is_invalid": false,
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_12-$.o[?@>1 && @<4]",
@@ -543,7 +628,8 @@
             "parser_ast": "${CS{bs[ns:o]/bs}/CS, CS{bs[fs{?logical_and_expr[comp_expr(@, >, 1), comp_expr(@, <, 4)]/logical_and_expr}/fs]/bs}/CS}/$",
             "source_file_name": "table_12",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_12-$.o[?@>1 && @<4]",
@@ -551,7 +637,8 @@
             "parser_ast": "${CS{bs[ns:o]/bs}/CS, CS{bs[fs{?logical_and_expr[comp_expr(@, >, 1), comp_expr(@, <, 4)]/logical_and_expr}/fs]/bs}/CS}/$",
             "source_file_name": "table_12",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_12-$.o[?@.u ||  @.x]",
@@ -559,7 +646,8 @@
             "parser_ast": "${CS{bs[ns:o]/bs}/CS, CS{bs[fs{?logical_or_expr[@ segments<CS{bs[ns:u]/bs}/CS>, @ segments<CS{bs[ns:x]/bs}/CS>]/logical_or_expr}/fs]/bs}/CS}/$",
             "source_file_name": "table_12",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_12-$.a[?@.b == $.x]",
@@ -567,7 +655,8 @@
             "parser_ast": "${CS{bs[ns:a]/bs}/CS, CS{bs[fs{?comp_expr(@{sqs{ns:b}}/@, ==, ${sqs{ns:x}}/$)}/fs]/bs}/CS}/$",
             "source_file_name": "table_12",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_12-$.a[?@ == @]",
@@ -575,7 +664,8 @@
             "parser_ast": "${CS{bs[ns:a]/bs}/CS, CS{bs[fs{?comp_expr(@, ==, @)}/fs]/bs}/CS}/$",
             "source_file_name": "table_12",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_14-$[?length(@) < 3]",
@@ -583,7 +673,8 @@
             "parser_ast": "${CS{bs[fs{?comp_expr(length(@)->ValueType, <, 3)}/fs]/bs}/CS}/$",
             "source_file_name": "table_14",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_14-$[?length(@.*) < 3]",
@@ -591,7 +682,8 @@
             "parser_ast": "",
             "source_file_name": "table_14",
             "is_invalid": true,
-            "err_msg": "Validation Error: function_expr: Expected singular query for ValueType parameter at position 11: $[?length(^@.*^) < 3]"
+            "err_msg": "Validation Error: function_expr: Expected singular query for ValueType parameter at position 11: $[?length(^@.*^) < 3]",
+            "subparse_production": null
         },
         {
             "test_name": "table_14-$[?count(@.*) == 1]",
@@ -599,7 +691,8 @@
             "parser_ast": "${CS{bs[fs{?comp_expr(count(@ segments<CS{bs[*]/bs}/CS>)->ValueType, ==, 1)}/fs]/bs}/CS}/$",
             "source_file_name": "table_14",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_14-$[?count(1) == 1]",
@@ -607,7 +700,8 @@
             "parser_ast": "",
             "source_file_name": "table_14",
             "is_invalid": true,
-            "err_msg": "Validation Error: function_expr: Expected NodesType but got ValueType at position 10: $[?count(^1^) == 1]"
+            "err_msg": "Validation Error: function_expr: Expected NodesType but got ValueType at position 10: $[?count(^1^) == 1]",
+            "subparse_production": null
         },
         {
             "test_name": "table_14-$[?count(foo(@.*)) == 1]",
@@ -615,7 +709,8 @@
             "parser_ast": "",
             "source_file_name": "table_14",
             "is_invalid": true,
-            "err_msg": "Illegal Function Name: function_expr: Function name 'foo' is not registered at position 10: $[?count(^foo^(@.*)) == 1]"
+            "err_msg": "Illegal Function Name: function_expr: Function name 'foo' is not registered at position 10: $[?count(^foo^(@.*)) == 1]",
+            "subparse_production": null
         },
         {
             "test_name": "table_14-$[?match(@.timezone, 'Europe/.*')]",
@@ -623,7 +718,8 @@
             "parser_ast": "${CS{bs[fs{?match(@ segments<CS{bs[ns:timezone]/bs}/CS>, Europe/.*)->LogicalType}/fs]/bs}/CS}/$",
             "source_file_name": "table_14",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_14-$[?match(@.timezone,'Europe/.*') == true]",
@@ -631,7 +727,8 @@
             "parser_ast": "",
             "source_file_name": "table_14",
             "is_invalid": true,
-            "err_msg": "Invalid Syntax: bracketed_selection: Expected ',' or ']', found == at position 34: $[?match(@.timezone,'Europe/.*') ^==^ true]"
+            "err_msg": "Invalid Syntax: bracketed_selection: Expected ',' or ']', found == at position 34: $[?match(@.timezone,'Europe/.*') ^==^ true]",
+            "subparse_production": null
         },
         {
             "test_name": "table_14-$[?value(@..color) == \"red\"]",
@@ -639,7 +736,8 @@
             "parser_ast": "${CS{bs[fs{?comp_expr(value(@ segments<DS{bs[ns:color]/bs}/DS>)->ValueType, ==, red)}/fs]/bs}/CS}/$",
             "source_file_name": "table_14",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_14-$[?value(@..color)]",
@@ -647,7 +745,8 @@
             "parser_ast": "",
             "source_file_name": "table_14",
             "is_invalid": true,
-            "err_msg": "Validation Error: test_expr: Function not well-typed for test_expr. Expected LogicalType or NodesType, got ValueType at position 4: $[?^value(@..color)^]"
+            "err_msg": "Validation Error: test_expr: Function not well-typed for test_expr. Expected LogicalType or NodesType, got ValueType at position 4: $[?^value(@..color)^]",
+            "subparse_production": null
         },
         {
             "test_name": "table_14-$[?bar(@.a)]",
@@ -655,7 +754,8 @@
             "parser_ast": "",
             "source_file_name": "table_14",
             "is_invalid": true,
-            "err_msg": "Illegal Function Name: function_expr: Function name 'bar' is not registered at position 4: $[?^bar^(@.a)]"
+            "err_msg": "Illegal Function Name: function_expr: Function name 'bar' is not registered at position 4: $[?^bar^(@.a)]",
+            "subparse_production": null
         },
         {
             "test_name": "table_14-$[?bnl(@.*)]",
@@ -663,7 +763,8 @@
             "parser_ast": "",
             "source_file_name": "table_14",
             "is_invalid": true,
-            "err_msg": "Illegal Function Name: function_expr: Function name 'bnl' is not registered at position 4: $[?^bnl^(@.*)]"
+            "err_msg": "Illegal Function Name: function_expr: Function name 'bnl' is not registered at position 4: $[?^bnl^(@.*)]",
+            "subparse_production": null
         },
         {
             "test_name": "table_14-$[?blt(1==1)]",
@@ -671,7 +772,8 @@
             "parser_ast": "",
             "source_file_name": "table_14",
             "is_invalid": true,
-            "err_msg": "Illegal Function Name: function_expr: Function name 'blt' is not registered at position 4: $[?^blt^(1==1)]"
+            "err_msg": "Illegal Function Name: function_expr: Function name 'blt' is not registered at position 4: $[?^blt^(1==1)]",
+            "subparse_production": null
         },
         {
             "test_name": "table_14-$[?blt(1)]",
@@ -679,7 +781,8 @@
             "parser_ast": "",
             "source_file_name": "table_14",
             "is_invalid": true,
-            "err_msg": "Illegal Function Name: function_expr: Function name 'blt' is not registered at position 4: $[?^blt^(1)]"
+            "err_msg": "Illegal Function Name: function_expr: Function name 'blt' is not registered at position 4: $[?^blt^(1)]",
+            "subparse_production": null
         },
         {
             "test_name": "table_14-$[?bal(1)]",
@@ -687,7 +790,8 @@
             "parser_ast": "",
             "source_file_name": "table_14",
             "is_invalid": true,
-            "err_msg": "Illegal Function Name: function_expr: Function name 'bal' is not registered at position 4: $[?^bal^(1)]"
+            "err_msg": "Illegal Function Name: function_expr: Function name 'bal' is not registered at position 4: $[?^bal^(1)]",
+            "subparse_production": null
         },
         {
             "test_name": "table_15-$[0, 3]",
@@ -695,7 +799,8 @@
             "parser_ast": "${CS{bs[is:0, is:3]/bs}/CS}/$",
             "source_file_name": "table_15",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_15-$[0:2, 5]",
@@ -703,7 +808,8 @@
             "parser_ast": "${CS{bs[slice(0:2:), is:5]/bs}/CS}/$",
             "source_file_name": "table_15",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_15-$[0, 0]",
@@ -711,7 +817,8 @@
             "parser_ast": "${CS{bs[is:0, is:0]/bs}/CS}/$",
             "source_file_name": "table_15",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_16-$..j",
@@ -719,7 +826,8 @@
             "parser_ast": "${DS{bs[ns:j]/bs}/DS}/$",
             "source_file_name": "table_16",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_16-$..j",
@@ -727,7 +835,8 @@
             "parser_ast": "${DS{bs[ns:j]/bs}/DS}/$",
             "source_file_name": "table_16",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_16-$..[0]",
@@ -735,7 +844,8 @@
             "parser_ast": "${DS{bs[is:0]/bs}/DS}/$",
             "source_file_name": "table_16",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_16-$..[*]",
@@ -743,7 +853,8 @@
             "parser_ast": "${DS{bs[*]/bs}/DS}/$",
             "source_file_name": "table_16",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_16-$..*",
@@ -751,7 +862,8 @@
             "parser_ast": "${DS{bs[*]/bs}/DS}/$",
             "source_file_name": "table_16",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_16-$..o",
@@ -759,7 +871,8 @@
             "parser_ast": "${DS{bs[ns:o]/bs}/DS}/$",
             "source_file_name": "table_16",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_16-$.o..[*, *]",
@@ -767,7 +880,8 @@
             "parser_ast": "${CS{bs[ns:o]/bs}/CS, DS{bs[*, *]/bs}/DS}/$",
             "source_file_name": "table_16",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_16-$.a..[0, 1]",
@@ -775,7 +889,8 @@
             "parser_ast": "${CS{bs[ns:a]/bs}/CS, DS{bs[is:0, is:1]/bs}/DS}/$",
             "source_file_name": "table_16",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_17-$.a",
@@ -783,7 +898,8 @@
             "parser_ast": "${CS{bs[ns:a]/bs}/CS}/$",
             "source_file_name": "table_17",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_17-$.a[0]",
@@ -791,7 +907,8 @@
             "parser_ast": "${CS{bs[ns:a]/bs}/CS, CS{bs[is:0]/bs}/CS}/$",
             "source_file_name": "table_17",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_17-$.a.d",
@@ -799,7 +916,8 @@
             "parser_ast": "${CS{bs[ns:a]/bs}/CS, CS{bs[ns:d]/bs}/CS}/$",
             "source_file_name": "table_17",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_17-$.b[0]",
@@ -807,7 +925,8 @@
             "parser_ast": "${CS{bs[ns:b]/bs}/CS, CS{bs[is:0]/bs}/CS}/$",
             "source_file_name": "table_17",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_17-$.b[*]",
@@ -815,7 +934,8 @@
             "parser_ast": "${CS{bs[ns:b]/bs}/CS, CS{bs[*]/bs}/CS}/$",
             "source_file_name": "table_17",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_17-$.b[?@]",
@@ -823,7 +943,8 @@
             "parser_ast": "${CS{bs[ns:b]/bs}/CS, CS{bs[fs{?@}/fs]/bs}/CS}/$",
             "source_file_name": "table_17",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_17-$.b[?@==null]",
@@ -831,7 +952,8 @@
             "parser_ast": "${CS{bs[ns:b]/bs}/CS, CS{bs[fs{?comp_expr(@, ==, null)}/fs]/bs}/CS}/$",
             "source_file_name": "table_17",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_17-$.c[?@.d==null]",
@@ -839,7 +961,8 @@
             "parser_ast": "${CS{bs[ns:c]/bs}/CS, CS{bs[fs{?comp_expr(@{sqs{ns:d}}/@, ==, null)}/fs]/bs}/CS}/$",
             "source_file_name": "table_17",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_17-$.null",
@@ -847,7 +970,8 @@
             "parser_ast": "${CS{bs[ns:null]/bs}/CS}/$",
             "source_file_name": "table_17",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_18-$.a",
@@ -855,7 +979,8 @@
             "parser_ast": "${CS{bs[ns:a]/bs}/CS}/$",
             "source_file_name": "table_18",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_18-$[1]",
@@ -863,7 +988,8 @@
             "parser_ast": "${CS{bs[is:1]/bs}/CS}/$",
             "source_file_name": "table_18",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_18-$[-3]",
@@ -871,7 +997,8 @@
             "parser_ast": "${CS{bs[is:-3]/bs}/CS}/$",
             "source_file_name": "table_18",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_18-$.a.b[1:2]",
@@ -879,7 +1006,8 @@
             "parser_ast": "${CS{bs[ns:a]/bs}/CS, CS{bs[ns:b]/bs}/CS, CS{bs[slice(1:2:)]/bs}/CS}/$",
             "source_file_name": "table_18",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_18-$[\"\\u000B\"]",
@@ -887,7 +1015,8 @@
             "parser_ast": "${CS{bs[ns:\u000b]/bs}/CS}/$",
             "source_file_name": "table_18",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         },
         {
             "test_name": "table_18-$[\"\\u0061\"]",
@@ -895,7 +1024,8 @@
             "parser_ast": "${CS{bs[ns:a]/bs}/CS}/$",
             "source_file_name": "table_18",
             "is_invalid": false,
-            "err_msg": ""
+            "err_msg": "",
+            "subparse_production": null
         }
     ]
 }

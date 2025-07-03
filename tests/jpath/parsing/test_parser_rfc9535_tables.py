@@ -31,6 +31,7 @@ class ParserTestCase:
     source_file_name  : str
     is_invalid        : bool = False
     err_msg           : str  = ""
+    subparse_production: str| None = None
 
 
 def data_loader() -> list[ParserTestCase]:

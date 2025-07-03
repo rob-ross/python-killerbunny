@@ -4,6 +4,7 @@
 #  Open-source license to come.
 #  Created by: Robert L. Ross
 #
+#
 
 """
 Runs test cases fromjsonpath-compliance-normalized-paths
@@ -68,7 +69,7 @@ class CTSTestData:
         )
 
 _MODULE_DIR = Path(__file__).parent
-_TEST_FILE_PATH = _MODULE_DIR / "normalized_paths.json"
+_TEST_FILE_PATH = _MODULE_DIR / "nts/normalized_paths.json"
 _FILE_LIST = [_TEST_FILE_PATH]
 
 def data_loader() -> list[CTSTestData]:
@@ -81,7 +82,9 @@ def data_loader() -> list[CTSTestData]:
     return test_data
 
 
-# todo we need to implement a Normalize function in order to run the tests against it
+# todo we need to implement a Normalize function in the API in order to run the tests against it
+def test_dummy() -> None:
+    assert True
 
 # @pytest.mark.parametrize("case", data_loader(), ids=operator.attrgetter("test_name"))
 # def test_normalized_paths(case: CTSTestData ) -> None:

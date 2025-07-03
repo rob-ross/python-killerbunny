@@ -1,3 +1,6 @@
+# todo there is no json value for these strings in the RFC, as they are intended to test well-formedness and validity.
+# we have such tests in parsing.test_table_14_functions.py. Create a sample JSON text file for testing these paths
+# in the evaluator
 $[?length(@) < 3]
 $[?length(@.*) < 3]
 $[?count(@.*) == 1]

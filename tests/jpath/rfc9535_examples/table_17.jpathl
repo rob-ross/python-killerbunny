@@ -1,3 +1,4 @@
+# json_file: example_2.6.1.json
 $.a
 $.a[0]
 $.a.d

@@ -1,3 +1,5 @@
+# json_file: example_2.3.5.3.1.json
+# subparse: comparison_expr
 $.absent1 == $.absent2
 $.absent1 <= $.absent2
 $.absent == 'g'

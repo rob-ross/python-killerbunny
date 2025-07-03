@@ -471,6 +471,20 @@
             "is_invalid": false
         },
         {
+            "test_name": "table_12-$.a[?match(@.b, \"[jk]\")]",
+            "json_path": "$.a[?match(@.b, \"[jk]\")]",
+            "lexer_tokens": "DOLLAR, DOT, ID:a, LBRACKET, QMARK, ID:match, LPAREN, AT, DOT, ID:b, COMMA, STRING:\"[jk]\", RPAREN, RBRACKET, EOF",
+            "source_file_name": "table_12",
+            "is_invalid": false
+        },
+        {
+            "test_name": "table_12-$.a[?search(@.b, \"[jk]\")]",
+            "json_path": "$.a[?search(@.b, \"[jk]\")]",
+            "lexer_tokens": "DOLLAR, DOT, ID:a, LBRACKET, QMARK, ID:search, LPAREN, AT, DOT, ID:b, COMMA, STRING:\"[jk]\", RPAREN, RBRACKET, EOF",
+            "source_file_name": "table_12",
+            "is_invalid": false
+        },
+        {
             "test_name": "table_12-$.o[?@>1 && @<4]",
             "json_path": "$.o[?@>1 && @<4]",
             "lexer_tokens": "DOLLAR, DOT, ID:o, LBRACKET, QMARK, AT, GT, INT:1, AND, AT, LT, INT:4, RBRACKET, EOF",

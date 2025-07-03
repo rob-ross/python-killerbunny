@@ -9,13 +9,14 @@
 
 """Functions for creating test data files for the Lexer, Parser, and Evaluator unit tests"""
 import json
-from dataclasses import dataclass, asdict, is_dataclass
+from dataclasses import dataclass, asdict, is_dataclass, field
 from pathlib import Path
 from typing import cast, Any
 
 from killerbunny.evaluating.evaluator import JPathEvaluator
 from killerbunny.evaluating.runtime_result import RuntimeResult
 from killerbunny.evaluating.value_nodes import VNodeList
+from killerbunny.evaluating.well_formed_query import WellFormedValidQuery
 from killerbunny.lexing.lexer import JPathLexer
 from killerbunny.lexing.tokens import Token
 from killerbunny.parsing.node_type import ASTNode
@@ -50,6 +51,7 @@ FRAGILE_TEST_DIR = _MODULE_DIR / '../../tests/'
 FRAGILE_TEST_DIR_PATH = Path(FRAGILE_TEST_DIR)
 LEXER_TEST_CASES_FILENAME = "lexer_test_cases.json"
 PARSER_TEST_CASES_FILENAME = "parser_test_cases.json"
+EVALUATOR_TEST_CASES_FILENAME = "evaluator_test_cases.json"
 
 
 def load_obj_from_json_file(input_file: Path) -> JSON_ValueType:
@@ -312,7 +314,8 @@ def display_test_cases(test_cases: list[ Any ], file_name: str) -> None:
         for test_case in test_cases:
             if is_dataclass(test_case):
                 dict_ = asdict(test_case)
-                value = dict_.get("lexer_tokens", None) or dict_.get("parser_ast", None) or ''
+                value = (dict_.get("lexer_tokens", None) or dict_.get("parser_ast", None) or
+                         dict_.get("results_values", None) or '')
                 msg = dict_["err_msg"] if dict_["is_invalid"] else value
                 print(f"{dict_['json_path']}{JPATH_DATA_SEPARATOR}{msg}")
             else:
@@ -386,9 +389,25 @@ def process_parser_paths(input_dir: Path,
 # EVALUATOR TEST GENERATION
 ####################################################################
 
-def evaluate_jpath_str(file_name:str, jpath_query_str: str, json_value:JSON_ValueType) -> VNodeList:
+
+@dataclass(frozen=True, slots=True)
+class EvaluatorTestCase:
+    test_name         : str
+    json_path         : str
+    root_value        : JSON_ValueType
+    source_file_name  : str
+    is_invalid        : bool = False
+    err_msg           : str  = ""
+    subparse_production: str| None = None
+    results_values: list[ JSON_ValueType ] = field(default_factory=list)
+    results_paths : list[ list[str] ]      = field(default_factory=list)
+    
+def evaluate_jpath_str(file_name:str, jpath_query_str: str, json_value:JSON_ValueType) -> EvaluatorTestCase:
     """Lex and parse the JSON Path query string and evalutate it with the JSON value in the argument.
     Return a VNodeList"""
+    
+    # print(f"evaluate_jpath_str({file_name}, {jpath_query_str}, {json_value})")
+    
     lexer = JPathLexer(file_name, jpath_query_str)
     tokens, error = lexer.tokenize()
     if error:
@@ -398,6 +417,7 @@ def evaluate_jpath_str(file_name:str, jpath_query_str: str, json_value:JSON_Valu
     parser = JPathParser(tokens)
     result: ParseResult =  parser.parse()
     if result.error:
+        # Evaluator tests shouldn't result in errors. Error cases are tested in lexing and parsing tests.
         result_str = result.error.as_test_string()
         raise ValueError(result_str)
     
@@ -411,21 +431,105 @@ def evaluate_jpath_str(file_name:str, jpath_query_str: str, json_value:JSON_Valu
     if rt_result.error:
         raise ValueError(f"Evaluator returned Error: {rt_result.error} for query string: {jpath_query_str}")
     if rt_result.value is not None:
-       return rt_result.value
+        # print(f"ast_node: {ast_node}, value: {rt_result.value}, type(value) = {type(rt_result.value)}")
+        test_name = f"{file_name}-{jpath_query_str}"
+        values: list[JSON_ValueType] =  list(cast(VNodeList, rt_result.value).values())
+        #values_json = json.dumps(values)
+        paths: list[str] =  [ npath.jpath_str for npath in cast(VNodeList, rt_result.value).paths() ]
+        test_case = EvaluatorTestCase(test_name, jpath_query_str, json_value, file_name, False, "", None, [values], [paths],)
+        return test_case
     else:
         raise RuntimeError(f"Evaluator returned null value for query string: {jpath_query_str}")
 
-def generate_evaluator_path_nodelist(input_path: Path, json_value: JSON_ValueType) -> list[ tuple[ str, VNodeList]  ]:
-    result_list: list[ tuple[ str, VNodeList] ] = []
+def generate_evaluator_test_cases(input_path: Path) -> list[ EvaluatorTestCase ]:
+    result_list: list[ EvaluatorTestCase ] = []
     file_name: str = input_path.name
+    json_value: JSON_ValueType
+    root_value: dict[str, JSON_ValueType] = {}
     with open(input_path, "r", encoding=UTF8, buffering=ONE_MEBIBYTE) as input_file:
         for line in input_file:
             line_stripped = line.strip()
-            if line_stripped == '' or line_stripped.startswith("#"):
-                continue  # ignore comment lines or blank lines
-            result_nodelist: VNodeList = evaluate_jpath_str(file_name, line_stripped, json_value)
-            result_list.append( (line_stripped, result_nodelist) )
+            if line_stripped == '':
+                continue  # ignore blank lines
+            if line_stripped.startswith("#"):
+                if line_stripped.find('json_file:') != -1:
+                    data_file_name = line_stripped.lstrip(' #').partition(':')[2].strip()
+                    data_file_path = input_path.parent / data_file_name
+                    with open(data_file_path, "r", encoding=UTF8, buffering=ONE_MEBIBYTE) as data_file:
+                        root_value = json.load(data_file)
+
+                continue
+            test_case: EvaluatorTestCase = evaluate_jpath_str(file_name, line_stripped, root_value)
+            result_list.append( test_case )
     return result_list
+
+
+
+def process_evaluator_paths(input_dir: Path,
+                         suffix: str,
+                         output_dir: Path | None = None,
+                         generate_test_file: bool = False,
+                         quiet:bool = False)-> None:
+    
+    """Given a directory path and a file suffix, run generate_evaluator_path_nodelist() for each file in the directory
+    that ends with `suffix`. No directory recursion is done. Each input file contains a list of JSON Path query strings.
+    
+    This is a utility function to help create test data for evaluator unit testing.
+    The open() call for creating the test file uses the 'x' mode flag, so it will report an error
+    if the file already exists.
+    
+    If `generate_test_file` is True, create a JSON test file containing each matching input file's test data
+     and save it as:  tests/jpath/parsing/evaluator_test_cases.json.
+    
+    If `quiet` is True, omits writing most output to the console, except for warning or error messages.
+    """
+    if not quiet:
+        print(f"*** Processing jpathl files for the Evaluator")
+    
+    if not input_dir.is_dir():
+        raise FileNotFoundError(f'Input directory {input_dir} does not exist')
+    if generate_test_file and output_dir is None:
+        raise ValueError(f"`generate_test_files` is  True yet no output directory was specified.")
+    
+    if generate_test_file and output_dir is not None:
+        # ensure test directory exists
+        output_dir.mkdir(parents=True, exist_ok=True)
+        if not quiet:
+            print(f"\nGenerating test files in {output_dir}")
+    
+    generated_files: list[str] = []
+    test_cases: list[EvaluatorTestCase] = []
+    for file in sorted(input_dir.iterdir()):
+        if file.name in ("table_11.jpathl", "table_14.jpathl", "table_18.jpathl"):
+            continue # skip for now as we already have a test module for this
+        if file.name.endswith(suffix):
+            if not quiet:
+                print(f"\nProcessing '{file}'")
+            file_results: list[ EvaluatorTestCase  ] = generate_evaluator_test_cases(file)
+            if not file_results:
+                print(f"Warning: file '{file}' produced no results. Is it empty?")
+                continue
+            
+            if not quiet:
+                #display_test_cases(file_results, f"{input_dir.name}/{file.name}")
+                print(f"{input_dir.name}/{file.name} results:")
+                for test_case in file_results:
+                    print(f"\t{asdict(test_case)}")
+            
+            if generate_test_file:
+                test_cases.extend(file_results)
+    
+    if generate_test_file and test_cases:
+        outfile_path = output_dir / EVALUATOR_TEST_CASES_FILENAME  # type: ignore
+        if not quiet: print(f"Generating test file '{outfile_path}'")
+        generated_files.append( outfile_path.name )
+        write_test_case_file(outfile_path, "Evaluator tests of example paths in RFC 9535 tables 2-18.", test_cases)
+    
+    if generated_files and not quiet:
+        print(f"\nGenerated a total of {len(generated_files)} evaluator test files:")
+        for line in sorted(generated_files):
+            print(f"  {line}" )
+
 
 ##################################################################################################################
 
@@ -459,17 +563,46 @@ def create_subparser_test_files() -> None:
         production_name="comparison_expr",
         generate_test_file=True
     )
+    
+def create_evaluator_test_files() -> None:
+    """PRODUCTION CODE"""
+    input_dir  = FRAGILE_TEST_DIR_PATH / "jpath/rfc9535_examples/"
+    output_dir = FRAGILE_TEST_DIR_PATH / "jpath/evaluating/"
+    process_evaluator_paths(input_dir=input_dir, suffix="jpathl", output_dir=output_dir, generate_test_file=True)
+
 
 def create_all_test_files() -> None:
     """PRODUCTION CODE"""
     create_lexer_test_files()
     create_parser_test_files()
     create_subparser_test_files()
+    create_evaluator_test_files()
+
+
+def t1() -> None:
+    root_value: dict[str, JSON_ValueType] = {
+        "a": [3, 5, 1, 2, 4, 6,
+              {"b": "j"},
+              {"b": "k"},
+              {"b": {}},
+              {"b": "kilo"}
+              ],
+        "o": {"p": 1, "q": 2, "r": 3, "s": 5, "t": {"u": 6}},
+        "e": "f"
+    }
+    
+    jpath_query_str = '$[?@.*]'
+    query = WellFormedValidQuery.from_str(jpath_query_str)
+    results = query.eval(root_value)
+    print(f"results = {results}")
 
 def main() -> None:
+    pass
     #create_lexer_test_files()
     #create_parser_test_files()
-    create_subparser_test_files()
+    #create_subparser_test_files()
+    # create_evaluator_test_files()
+    # t1()
     
 if __name__ == '__main__':
     main()

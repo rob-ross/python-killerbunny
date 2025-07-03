@@ -4,6 +4,7 @@
 #  Open-source license to come.
 #  Created by: Robert L. Ross
 #
+#
 
 """
 Runs test cases from the jsponpath-compliance-test_suite
@@ -41,14 +42,14 @@ from killerbunny.shared.json_type_defs import JSON_ValueType
 
 @dataclass(frozen=True, slots=True)
 class CTSTestData:
-    """Holds a single test case from a cts json file, and maps domain names from the test file domain to the domain names in
+    """Holds a single test case from a `cts` JSON file, and maps domain names from the test file domain to the domain names in
     RFC 9535. We also abstract away the distinciton between a single test result and multiple test results for a single
     test case by just implementing a results_values and results_paths list. Test cases with a single result and path
     are represented as a single element results_values/paths list."""
     test_name    : str
     json_path    : str
     root_value   : JSON_ValueType
-    is_invalid   : bool  # json path query string is invalid and should trigger an error
+    is_invalid   : bool  # JSON path query string is invalid and should trigger an error
     
     # result_value : JSON_ValueType
     # result_paths : list[str]
@@ -60,7 +61,7 @@ class CTSTestData:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> 'CTSTestData':
         """Create a CTSTestData instance from the argument dict. `data` is assumed to be a single test case in a
-        cts json file. We pop known keys from the cts file argument dict and replace them with key names aligned with
+        `cts` JSON file. We pop known keys from the `cts` file argument dict and replace them with key names aligned with
         RFC 9535 nomenclature."""
         kwargs = data
         test_name = kwargs.pop('name', '')
@@ -98,8 +99,8 @@ class CTSTestData:
         )
 
 _MODULE_DIR = Path(__file__).parent
-_CTS_FILE_PATH = _MODULE_DIR / "cts.json"
-_FILE_LIST = [ "cts.json",]
+_CTS_FILE_PATH = _MODULE_DIR / "cts/cts.json"
+_FILE_LIST = [ _CTS_FILE_PATH ]
 
 def data_loader() -> list[CTSTestData]:
     test_data: list[CTSTestData] = []
@@ -115,11 +116,6 @@ def valid_paths() -> list[CTSTestData]:
 
 def invalid_paths() -> list[CTSTestData]:
     return [ test for test in data_loader() if test.is_invalid ]
-
-
-def _write_to_json_file(output_path: Path, json_value: Any) -> None:
-    with open(output_path, "w", encoding=UTF8, buffering=ONE_MEBIBYTE) as output_file:
-        json.dump(json_value, output_file)
 
 # (test name, reason for excluding)
 EXCLUDED_TEST_NAMES = {
@@ -156,7 +152,7 @@ DEBUG_TEST_NAMES = {"filter, equals number, negative zero and zero"}
 
 @pytest.mark.parametrize("case", valid_paths(), ids=operator.attrgetter("test_name"))
 def test_cts_valid(case: CTSTestData ) -> None:
-    """Test the cases in the cts file that are intended to be well-formed and valid and should return a result. """
+    """Test the cases in the `cts` file that are intended to be well-formed and valid and should return a result. """
     if case.test_name in EXCLUDED_TESTS_MAP:
         pytest.skip(reason=f"{EXCLUDED_TESTS_MAP[case.test_name][1]}: '{case.test_name}'")
         
@@ -176,7 +172,7 @@ def test_cts_valid(case: CTSTestData ) -> None:
 
 @pytest.mark.parametrize("case", invalid_paths(), ids=operator.attrgetter("test_name"))
 def test_cts_invalid(case: CTSTestData ) -> None:
-    """Test the cases in the cts file that are not well-formed or valid and should fail lexing or parsing."""
+    """Test the cases in the `cts` file that are not well-formed or valid and should fail lexing or parsing."""
     #query = WellFormedValidQuery.from_str(case.json_path)
     if case.test_name in EXCLUDED_TESTS_MAP:
         pytest.skip(reason=f"{EXCLUDED_TESTS_MAP[case.test_name][1]}: '{case.test_name}'")
@@ -184,4 +180,4 @@ def test_cts_invalid(case: CTSTestData ) -> None:
     if case.test_name in DEBUG_TEST_NAMES:
         print(f"\n* * * * * test: '{case.test_name}', json_root: {case.root_value}, json_path: {case.json_path}, expected: {case.results_values}")
     with pytest.raises(Exception):
-        query = WellFormedValidQuery.from_str(case.json_path)
+        _ = WellFormedValidQuery.from_str(case.json_path)
