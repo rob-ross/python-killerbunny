@@ -1,9 +1,0 @@
-# file_name: table_16.jpath_ast
-$..j  :  ${DS{bs[ns:j]/bs}/DS}/$
-$..j  :  ${DS{bs[ns:j]/bs}/DS}/$
-$..[0]  :  ${DS{bs[is:0]/bs}/DS}/$
-$..[*]  :  ${DS{bs[*]/bs}/DS}/$
-$..*  :  ${DS{bs[*]/bs}/DS}/$
-$..o  :  ${DS{bs[ns:o]/bs}/DS}/$
-$.o..[*, *]  :  ${CS{bs[ns:o]/bs}/CS, DS{bs[*, *]/bs}/DS}/$
-$.a..[0, 1]  :  ${CS{bs[ns:a]/bs}/CS, DS{bs[is:0, is:1]/bs}/DS}/$

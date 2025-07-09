@@ -63,7 +63,7 @@ class JPathParser:
         self.advance()
     
     def _update_current_token(self) -> None:
-        """Set the self.current_token to the token at the current self.token_index element in the tokens list."""
+        """Set the self.current_token to the token at the current self.token_index element in the `tokens` list."""
         if self.token_index < len(self.tokens):
             self.current_token =  self.tokens[self.token_index]
         else:
@@ -122,13 +122,13 @@ class JPathParser:
                  production_name: str = "all"
                  ) -> tuple[ list[ tuple[str, ASTNode] ] , list[ tuple[str, Error] ] ] :
         """Primarily a debugging method, used to parse grammar symbols other than "start". If no `prodution_name` is
-        given, we try to parse all the symbol methods in the SUBPARSE_NAMES list. If a `production_name` is  provided,
-        we try to parse just that method. We return the result(s) of  methods that don't produce a parse error.
+        given, we try to parse all the symbol methods in the SUBPARSE_NAMES list. If a `production_name` is provided,
+        we try to parse just that method. We return the result(s) of methods that don't produce a parse error.
         
-        :return a tuple of two lists. The first list contains successful parsings, the second list contains
-        the Errors for unsuccessful parsings. Each list element is a 2 item tuple, the first item is the name of the
-        production symbol method attempted, (see  SUBPARSE_NAMES),
-        the second item is the ASTNode for a successful parse, (first list) or the Error
+        :return: a tuple of two lists. The first list contains successful parsings, the second list contains
+        the Errors for unsuccessful parsings. Each list element is a 2-item tuple. The first item is the name of the
+        production symbol method attempted (see SUBPARSE_NAMES).
+        The second item is the ASTNode for a successful parse, (first list) or the Error
         for an unsuccessful parse (second list).
         """
         method_names: list[str] = SUBPARSE_NAMES
@@ -140,18 +140,19 @@ class JPathParser:
         method_errors:     list[ tuple[str, Error ]] = []
         
         for method_name in method_names:
-            self.re_init()  # reset parsing state to start of token list
+            self.re_init()  # reset the parsing state to start of the token list
             method = getattr(self, method_name, self.no_method)
             # noinspection PyAttributeOutsideInit
             self.method_name = method_name  # this assignment is just for the error message in no_method()
             res = method()
-            if not res.error and res.node and self.current_token.token_type == TokenType.EOF:  # parsed entire text with no errors
+            if not res.error and res.node and self.current_token.token_type == TokenType.EOF:
+                # parsed the entire text with no errors
                 parsing_successes.append( ( method_name, res.node ) )
             elif res.error:
                 method_errors.append( (method_name, res.error) )
             elif res.node:
                 # parsing succeeded with leftover tokens.
-                #parsing_successes.append( ( method_name, res.node ) )
+                #parsing_successes.append(( method_name, res.node ))
                 current_token: Token = self.current_token  # parsing stopped here
                 last_token = self.tokens[-1]
                 error = Error(
@@ -291,7 +292,7 @@ class JPathParser:
         if self.current_token.token_type == TokenType.STAR: # type: ignore
             wc:WildcardSelectorNode = cast(WildcardSelectorNode,res.register(self.wildcard_selector()))
             if res.error: return res
-            # we want to convert dot-wildcard into a BracketedSelectorNode ( .* ->  [*] ) for normalization
+            # we want to convert a dot-wildcard into a BracketedSelectorNode ( .* ->  [*] ) for normalization
             node = self._convert_to_bracketed_selection(wc)
         elif self.current_token.token_type in  (TokenType.IDENTIFIER, *JSON_KEYWORD_TOKEN_TYPES ):
             mns:MemberNameShorthandNode = cast(MemberNameShorthandNode,res.register(self.member_name_shorthand()))
@@ -363,7 +364,7 @@ class JPathParser:
     
     
     def member_name_shorthand(self) -> ParseResult:
-        """Assumes current token type is TokenType.IDENTIFIER.
+        """Assumes that the current token type is TokenType.IDENTIFIER.
        
         member_name_shorthand:IDENTIFIER
        
@@ -416,7 +417,7 @@ class JPathParser:
             if selector_:
                 selector_list.append(selector_)
         
-        # finished with optional selectors, look for the closing ]
+        # finished with optional selectors, look for the closing ']'
         if TokenType.RBRACKET != self.current_token.token_type: # type: ignore
             return res.failure(InvalidSyntaxError(self.current_token.position,
                                                   f"Expected ',' or ']', found {self.current_token.token_type}"))
@@ -489,7 +490,7 @@ class JPathParser:
         return res.success(node)
     
     def slice_selector(self) -> ParseResult:
-        """Assumes current token is slice-selector . """
+        """Assumes that the current token is a slice-selector. """
         res = ParseResult()
         match = re.match(bnf.SLICE_SELECTOR, self.current_token.value)
         if not match:
@@ -571,7 +572,7 @@ class JPathParser:
     
     def logical_or_expr(self) -> ParseResult:
         """
-        disjunction, binds less  tightly than conjuntion
+        Disjunction binds less tightly than conjuntion
         
         logical_or_expr  ::=  logical_and_expression ( "||" logical_and_expression )*
         
@@ -669,7 +670,7 @@ class JPathParser:
         """
         res = ParseResult()
         if self.current_token.token_type == TokenType.NOT:
-            # next symbol is either paren_expr or test_expr
+            # the next symbol is either paren_expr or test_expr
             if self.peek_next_token().token_type == TokenType.LPAREN:
                 node = res.register(self.paren_expr())
                 if res.error: return res
@@ -694,7 +695,7 @@ class JPathParser:
         if res.error is None and node is not None:
             return res.success(node)
         
-        # if the comparison_expr failed, it may just mean it wasn't a comparison_expr. We'll clear the error so we can
+        # If the comparison_expr failed, it may just mean it wasn't a comparison_expr. We'll clear the error so we can
         # try to parse a test_expr(). If that fails too it's ambiguous as to which production was intended.
         self.backtrack(res.to_reverse_count)
         res.error = None
@@ -929,6 +930,7 @@ class JPathParser:
 
         cur_node_id = CurrentNodeIdentifier(at_token)
         rel_query_node = RelativeQueryNode(cur_node_id, cast(RepetitionNode, segments_node))
+        rel_query_node.set_pos(at_token.position.text, at_token.position.start, self.current_token.position.start)
         return res.success(rel_query_node)
     
     
@@ -1164,7 +1166,7 @@ class JPathParser:
         
         name_segment ::=  ( "[" name_selector:STRING_LITERAL "]" ) | ( "." member_name_shorthand:IDENTIFIER )
 
-        :return: a NameSelectorNode in ParseResult.node. Converts a member_name_shorthand to NameSelectorNode.
+        :return: A NameSelectorNode in ParseResult.node. Converts a member_name_shorthand to NameSelectorNode.
         """
         res = ParseResult()
         
@@ -1290,7 +1292,7 @@ class JPathParser:
         if self.current_token.token_type == TokenType.RPAREN:  # type: ignore
             # no function_argument list
             res.register_advancement()
-            self.advance()  # consume ')' after empty arg list
+            self.advance()  # consume `)` after an empty arg list
             try:
                 fcn = FunctionCallNode(
                         function,
@@ -1336,7 +1338,7 @@ class JPathParser:
             res.register_advancement()
             self.advance()
             saved_token = self.current_token
-            func_arg = cast(FunctionArgument, res.register(self.function_argument()))
+            func_arg = cast(FunctionArgument, res.register( self.function_argument() ))
             if res.error: return res
             if func_arg is None:
                 return res.failure(
@@ -1363,13 +1365,13 @@ class JPathParser:
             return res.failure(
                 ValidationError(self.current_token.position,
                                 f"Expected {len(func_params)} arguments for function, got {arg_index + 1}"))
-            
+        
         if self.current_token.token_type != TokenType.RPAREN:  # type: ignore
             return res.failure(InvalidSyntaxError(self.current_token.position,
                                                   f"Expected ')', got {self.current_token.token_type}"))
         saved_token = self.current_token
         res.register_advancement()
-        self.advance()  # consume ')' after argument list
+        self.advance()  # consume ')' after the argument list
         
         try:
             fcn = FunctionCallNode( function,
@@ -1393,12 +1395,6 @@ class JPathParser:
         :return:
         """
         res = ParseResult()
-    
-        # try parsing a logical_expr,
-        # then a filter_query
-        # then a function_expr,
-        # then a literal.
-        
         
         if self.current_token.token_type in FILTER_QUERY_FIRST_SET:
             # parse as filter query
@@ -1424,7 +1420,7 @@ class JPathParser:
             fa.set_pos(saved_token.position.text, saved_token.position.start, self.current_token.position.start)
             return res.success(fa)
         
-        # try parsing as logical_expr. If returns none or error, backtrack then try literal
+        # Try parsing as logical_expr. If returns none or error, backtrack and then try literal
         saved_token = self.current_token
         logical_expr = res.try_register(self.logical_expr())
         if res.error or logical_expr is None:
@@ -1478,7 +1474,7 @@ class JPathParser:
     
     
     def json_keyword(self) -> ParseResult:
-        """Parse json keywords true, false, and null and create literal nodes for them."""
+        """Parse JSON keywords true, false, and null and create literal nodes for them."""
         res = ParseResult()
         if self.current_token.token_type not in JSON_KEYWORD_TOKEN_TYPES:
             return res.failure(  InvalidSyntaxError(self.current_token.position,
@@ -1510,14 +1506,14 @@ class JPathParser:
     
     def string_literal(self) -> ParseResult:
         """
-        Assumes current token is string literal.
+        Assumes the current token is string literal.
         
         Included for completeness. Not currently used, as the only production that uses a string literal
         is name-selector, and that processes the string-literal directly.
         
         string_literal:STRING_LITERAL
         
-        :return:
+        :return: A new StringLiteralNode in ParseResult.node
         """
         res = ParseResult()
         if self.current_token.token_type != TokenType.STRING:

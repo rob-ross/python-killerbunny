@@ -5,33 +5,32 @@
 #  Created by: Robert L. Ross
 #
 #
+import inspect
 import re
 import threading
 from abc import abstractmethod
 from enum import Enum
-from typing import TypeAlias, Union, TYPE_CHECKING, Any, Self, override, cast
+from typing import (TypeAlias, Union, Any, Self, cast, get_type_hints, get_origin, get_args)
+from typing import override  # type: ignore
 
-from killerbunny.evaluating.value_nodes import BooleanValue, NullValue, VNode, StringValue
+from killerbunny.evaluating.value_nodes import NullValue, VNode, StringValue
 from killerbunny.evaluating.value_nodes import VNodeList
 from killerbunny.parsing.node_type import ASTNodeType, ASTNode
 from killerbunny.parsing.parser_nodes import RepetitionNode, RelativeQueryNode, JsonPathQueryNode, \
     RelativeSingularQueryNode, AbsoluteSingularQueryNode
 from killerbunny.parsing.terminal_nodes import BooleanLiteralNode, NullLiteralNode, LiteralNode
-from killerbunny.shared.json_type_defs import JSON_VALUE_TYPES, JSON_ARRAY_TYPES, JSON_OBJECT_TYPES
-
-if TYPE_CHECKING:
-    from killerbunny.shared.json_type_defs import JSON_ValueType
+from killerbunny.shared.json_type_defs import JSON_ValueType, JSON_VALUE_TYPES, JSON_ARRAY_TYPES, JSON_OBJECT_TYPES
 
 
 ################################################################################################
-# FUNCTION TYPES   see  2.4.1. Type System for Function Expressions, pg 35, RFC 9535
+# FUNCTION TYPES -  see 2.4.1. Type System for Function Expressions, pg 35, RFC 9535
 ################################################################################################
 
 # Nothing: pg 35 RFC 9535.
 # The special result Nothing represents the absence of a JSON value and is distinct from any JSON value, including null.
 
 class NothingType:
-    """Singleton type for the Nothing instance. pg 35 RFC 9535.
+    """Singleton type for the Nothing instance. See page 35 RFC 9535.
      The special result Nothing represents the absence of a JSON value and is distinct
      from any JSON value, including null.
      """
@@ -54,8 +53,8 @@ class NothingType:
     
     @classmethod
     def instance(cls) -> 'NothingType':
-        """ Return a singleton instance of this class in a thread safe manner.
-        :return the singleton instance of this class
+        """ Return a singleton instance of this class in a thread-safe manner.
+        :return: The singleton instance of this class
         """
         if cls._instance is None:
             return cls._init_instance()
@@ -71,9 +70,9 @@ Nothing = NothingType.instance()
 
 
 class LogicalType(Enum):
-    """
+    """A boolean enum class used to type function parameters and return types.
     
-    see section 2.4.1. Type System for Function Expressions, pg 36 in RFC 9535
+    See section 2.4.1. Type System for Function Expressions, pg 36 in RFC 9535
      "LogicalTrue and LogicalFalse are unrelated to the JSON values expressed by the literals true and false."
     
     These types exist solely for typing the value returned from a function_expr or typing arguments to a function_expr
@@ -102,11 +101,10 @@ class LogicalType(Enum):
             return LogicalType.LogicalTrue
 
 
-# ValueType:  per pg 35 RFC 9535, ValueType is any valid JSON type plus Nothing
+# ValueType: per pg 35 RFC 9535, ValueType is any valid JSON type plus Nothing
 ValueType: TypeAlias = Union['JSON_ValueType', NothingType]  # for type hints
 VALUE_TYPES = (*JSON_VALUE_TYPES, NothingType)  # for isinstance()
-
-NodesType: TypeAlias = 'VNodeList'
+NodesType: TypeAlias = VNodeList
 
 class FunctionParamType(Enum):
     ValueType = ValueType
@@ -135,6 +133,7 @@ class FunctionNode(ASTNode):
         self._func_name:   str = func_name
         self._func_type:  'FunctionParam' = func_type
         self._param_list:  list['FunctionParam'] = param_list
+        self.set_python_params()
     
     @property
     def func_name(self) -> str:
@@ -142,7 +141,7 @@ class FunctionNode(ASTNode):
     
     @property
     def func_type(self) -> FunctionParamType:
-        """Return type of the function."""
+        """Return the type of the function."""
         return self._func_type.param_type
     
     @property
@@ -168,7 +167,91 @@ class FunctionNode(ASTNode):
         correct number of arguments"""
         return True
     
+    def get_eval_type_hints(self):
+        """Get the type hints of the eval method for this function node instance."""
+        # Get the actual implementation of the eval method from the subclass
+        eval_method = self.__class__.eval
+        
+        # Get the type annotations
+        type_hints = get_type_hints(eval_method)
+        
+        # Extract parameter types (excluding 'self' and 'return')
+        param_types = {
+            name: hint for name, hint in type_hints.items()
+            if name != 'return' and name != 'self'
+        }
+        
+        # Get the return type
+        return_type = type_hints.get('return', Any)
+        
+        return {
+            'param_types': param_types,
+            'return_type': return_type
+        }
+    
+    def _types_compatible(self, annotation_type, expected_type):
+        """Check if the annotation type is compatible with the expected type.
+        
+        This is a simplistic implementation - you might need to enhance it
+        based on your specific type system.
+        """
+        # If expected_type is Any, any annotation_type is compatible
+        if expected_type is Any:
+            return True
+        
+        if annotation_type == expected_type:
+            return True
+        
+        # Check for Union types
+        origin = get_origin(annotation_type)
+        if origin is Union:
+            args = get_args(annotation_type)
+            # If any of the union types match the expected type, it's compatible
+            return any(self._types_compatible(arg, expected_type) for arg in args)
+        
+        # For simple types, direct comparison
+        return annotation_type == expected_type
 
+    def set_python_params(self) -> None:
+        """Use the eval() signature to set the expected python arg types."""
+        # Get the eval method of the subclass
+        eval_method = self.__class__.eval
+        
+        # Get the signature of the method
+        sig = inspect.signature(eval_method)
+        parameters = list(sig.parameters.values())
+        
+        # Get expected parameter count from the function's parameter list
+        expected_param_count = len(self._param_list)
+        actual_param_count = len(parameters) - 1  # exclude `self`
+        
+        if actual_param_count != expected_param_count:
+            raise ValueError(
+                f"Eval method must have exactly {expected_param_count} parameters "
+                f"(excluding 'self'), but found {actual_param_count}"
+            )
+        
+        # Check if the parameter types match the declared FunctionParam types
+        type_hints = self.get_eval_type_hints()
+        param_types = type_hints['param_types']
+        
+        for i, (param_name, param_type) in enumerate(param_types.items()):
+            # Get the expected type from the corresponding FunctionParam
+            if i < len(self._param_list):
+                function_param = self._param_list[i]
+                function_param._python_type = param_type  # assign the python type based on the parameter hint
+                
+                # Check if the types are compatible?
+        
+        # Check return type compatibility
+        return_type = type_hints['return_type']
+        self._func_type._python_type = return_type
+        expected_return_type = self._func_type.python_type
+        if not self._types_compatible(return_type, expected_return_type):
+            raise ValueError(
+                f"Return type of eval method is '{return_type}', "
+                f"but '{expected_return_type}' was declared in FunctionParam"
+            )
 
 class FunctionCallNode(ASTNode):
     """AST node for a function invocation. Encapsulates a FunctionNode and an argument value list.
@@ -215,7 +298,7 @@ class FunctionCallNode(ASTNode):
         return f"{self._function_node.func_name}({arg_list})->{self._function_node.func_type}"
     
     def _validate_args(self, args: 'RepetitionNode') -> None:
-        """Ensure number of args equals number of defined parameters, and that their types match. """
+        """Ensure that the number of args equals the number of defined parameters and that their types match. """
         param_list = self._function_node.param_list
         arg_count_diff = len(param_list) - len(args)
         if arg_count_diff != 0:
@@ -235,10 +318,10 @@ class FunctionParam(ASTNode):
         """Represents a function parameter. This could either be a function return parameter or
         a function argument parameter.
         
-        :param param_name: formal name of the parameter. Although, all function args are passed by position, so this is
+        :param param_name: Formal name of the parameter. Although, all function args are passed by position, so this is
                             mainly to aid in debugging and logging
-        :param param_type: the allowed type of the parameter. 
-        :param python_type: can be used to narrow the parameter type to a specific Python type or types, 
+        :param param_type: The allowed type of the parameter.
+        :param python_type: Can be used to narrow the parameter type to a specific Python type or types,
         e.g., int | Nothing, as in the return type of the length() function extension. 
           
         """
@@ -279,7 +362,9 @@ class FunctionArgument(ASTNode):
     def __init__(self, node: ASTNode) -> None:
         super().__init__(ASTNodeType.FUNCTION_ARG)
         self._arg_node = node
-        self._arg_type,  self._python_type = self._param_type_for_node(node)
+        # these get set during validation
+        self._arg_type = None  # type: ignore
+        self._python_type = None # type: ignore
         
     @property
     def arg_node(self) -> ASTNode:
@@ -298,8 +383,13 @@ class FunctionArgument(ASTNode):
     
     def __str__(self) -> str:
         return f"{self._arg_node}"
-    
-    def _param_type_for_node(self, arg_node: ASTNode) -> tuple[FunctionParamType, Any] :
+        
+    def _param_type_for_node(self, param: FunctionParam) -> tuple[FunctionParamType, Any] :
+        """Determine the appropriate type for this argument, using the param for implicit conversions, if needed.
+        E.g., a relative_query as an argument to a function with declared param NodesType will be typed as NodesType,
+        VLNodesList. But the same relative_query argument to a parameter typed as LogicalType can be converted, so
+        it will get typed as LogicalType."""
+        arg_node = self._arg_node
         node_type = arg_node.node_type
         # literals
         if node_type == ASTNodeType.STRING:
@@ -314,34 +404,44 @@ class FunctionArgument(ASTNode):
             return FunctionParamType.ValueType, NullValue
         
         # logical_expr
-        elif node_type == ASTNodeType.LOGICAL_EXPR:
+        elif node_type == ASTNodeType.LOGICAL_EXPR or node_type == ASTNodeType.COMPARISON_EXPR:
             return FunctionParamType.LogicalType, LogicalType
         
         # function_expr
         elif isinstance(arg_node, FunctionCallNode):
             ret_type = arg_node.func_node.return_param
+            if ret_type.param_type == FunctionParamType.NodesType and  param.param_type == FunctionParamType.LogicalType:
+                return FunctionParamType.LogicalType, LogicalType  # this converts a NodeList type to LogicalType.
             return ret_type.param_type, ret_type.python_type
         
         # singluar query
-        elif isinstance(arg_node, (RelativeSingularQueryNode, AbsoluteSingularQueryNode)):
-            return FunctionParamType.ValueType, FunctionParamType.ValueType
-        elif isinstance(arg_node, (RepetitionNode, JsonPathQueryNode, RelativeQueryNode)) and arg_node.is_singular_query:
-            return FunctionParamType.ValueType, FunctionParamType.ValueType
+        elif ( isinstance(arg_node, (RelativeSingularQueryNode, AbsoluteSingularQueryNode)) or
+               ( arg_node.is_singular_query() and
+               isinstance(arg_node, (RepetitionNode, JsonPathQueryNode, RelativeQueryNode )))
+        ):
+            if param.param_type == FunctionParamType.LogicalType:
+                return FunctionParamType.LogicalType, LogicalType  # this converts a NodeList type to LogicalType.
+            else:
+                return FunctionParamType.ValueType, FunctionParamType.ValueType
         
         # filter_query
         elif isinstance(arg_node, (RelativeQueryNode, JsonPathQueryNode)):
-            return FunctionParamType.NodesType, VNodeList
+            if param.param_type == FunctionParamType.LogicalType:
+                return FunctionParamType.LogicalType, LogicalType  # this converts a NodeList type to LogicalType.
+            else:
+                return FunctionParamType.NodesType, VNodeList
         
         else:
-            raise TypeError(f"Expected logical_expr, filter_query, function_expr, or literal but got {type(arg_node)}")
+            raise TypeError(f"Expected logical_expr, filter_query, function_expr, or literal but got {type(arg_node)}, node_type = {arg_node.node_type}")
     
     
     def validate_type(self, param: FunctionParam) -> bool:
         """Validate the type of the argument against the expected type of the param.
         
         See section 2.4.3. Well-Typedness of Function Expressions, page 36, RFC 9535"""
+        self._arg_type,  self._python_type = self._param_type_for_node(param)
         if self._arg_type == param.param_type and self.python_type == param.python_type :
-            return True  # exact type match, simplest case
+            return True  # exact type match, the simplest case
         
         """
         An argument is well-typed:
@@ -401,8 +501,11 @@ class LengthFunction(FunctionNode):
     """Compute the length of a str, Array, or Object value"""
     def __init__(self) -> None:
         return_param = FunctionParam("return", FunctionParamType.ValueType, (int, NothingType))
-        param1 = FunctionParam("value", FunctionParamType.ValueType, VALUE_TYPES )
+        # param1 = FunctionParam("value", FunctionParamType.ValueType, VALUE_TYPES )
+        param1 = FunctionParam("value", FunctionParamType.ValueType, ValueType )
+    
         super().__init__("length", return_param, [param1])
+        
     
     def eval(self, value: ValueType) -> int | NothingType:  # type: ignore
         if isinstance(value, VNodeList):
@@ -457,7 +560,7 @@ class RegexFuncBase(FunctionNode):
     
     """
     def __init__(self, function_name: str) -> None:
-        return_param = FunctionParam("return", FunctionParamType.LogicalType, bool)
+        return_param = FunctionParam("return", FunctionParamType.LogicalType, LogicalType)
         param1 = FunctionParam("string", FunctionParamType.ValueType, str)
         param2 = FunctionParam("iregexp_str", FunctionParamType.ValueType, str)
         super().__init__(function_name, return_param, [param1, param2])
@@ -468,7 +571,7 @@ class RegexFuncBase(FunctionNode):
     
     
     def _convert_args(self, string: str | StringValue | VNodeList, iregexp_str: str | StringValue | VNodeList) -> tuple[str, str]:
-        """Convert argument values to str values. The search/match functions may be passed a string literal or a
+        """Convert argument values to str values. The search/match functions may be passed in a string literal or a
         single element VNodeList, from which we can obtain the value. """
         str_val: str
         if isinstance(string, VNodeList) and len(string) == 1 and isinstance(string[0].jvalue, (str, StringValue) ):   # type: ignore
@@ -489,8 +592,8 @@ class RegexFuncBase(FunctionNode):
     
     @override
     def validate_args(self, args: "RepetitionNode") -> bool:
-        """Verify that the regexp str will compile, and warn if it doesn't comply with I-regexp spec.
-        :raise re.error if the regexp is not supported by the re library
+        """Verify that the regexp str will compile and warn if it doesn't comply with I-regexp spec.
+        :raise: re.error if the regexp is not supported by the re library
         """
         if args is None:
             raise ValueError(f"MatchFunction.validate_args: args argument cannot be None.")
@@ -502,7 +605,7 @@ class RegexFuncBase(FunctionNode):
             raise ValueError(f"Expected {len(self._param_list)} arguments, but got {len(args)}")
         
         re_str = str(args[1])
-        re.compile(re_str)  # will raise re.error if re doesn't support the regexp
+        re.compile(re_str)  # will raise re.error if `re` doesn't support the regexp
         
         return True
 
@@ -512,13 +615,12 @@ class MatchFunction(RegexFuncBase):
         super().__init__("match")
     
     @override
-    def eval(self, string: str, iregexp_str: str) -> BooleanValue:  # type: ignore
+    def eval(self, string: str, iregexp_str: str) -> LogicalType:  # type: ignore
         try:
             str_val, regex_str = self._convert_args(string, iregexp_str)
         except TypeError:
-            return BooleanValue.value_for(False)
-        
-        return BooleanValue.value_for( re.fullmatch( regex_str, str_val) is not None )
+            return LogicalType.value_for(False)
+        return LogicalType.value_for( re.fullmatch( regex_str, str_val) is not None )
 
 class SearchFunction(RegexFuncBase):
     """Check whether a given string contains a substring that matches a given regular expression,"""
@@ -526,13 +628,12 @@ class SearchFunction(RegexFuncBase):
         super().__init__("search")
     
     @override
-    def eval(self, string: str, iregexp_str: str) -> BooleanValue:  # type: ignore
+    def eval(self, string: str, iregexp_str: str) -> LogicalType:  # type: ignore
         try:
             str_val, regex_str = self._convert_args(string, iregexp_str)
         except TypeError:
-            return BooleanValue.value_for(False)
-        return BooleanValue.value_for( re.search( regex_str, str_val) is not None )
-
+            return LogicalType.value_for(False)
+        return LogicalType.value_for( re.search( regex_str, str_val) is not None )
 
 
 class ValueFunction(FunctionNode):
@@ -577,8 +678,8 @@ class _FunctionRegistry:
     
     @classmethod
     def instance(cls) -> '_FunctionRegistry':
-        """ Return a singleton instance of this class in a thread safe manner.
-        :return the singleton instance of this class
+        """ Return a singleton instance of this class in a thread-safe manner.
+        :return: The singleton instance of this class
         """
         if cls._instance is not None:
             return cls._instance
@@ -605,5 +706,7 @@ _FunctionRegistry.register_known_functions()
 def get_registered_function(func_name: str) -> FunctionNode | None:
     return _FunctionRegistry.instance().lookup(func_name)
 
-# todo we can provide an API for registering new functions such as:
-# def register_function(func: FunctionNode)
+
+def register_function(func: FunctionNode):
+    """Register an instance of a FunctionNode. """
+    _FunctionRegistry.instance().register(func)

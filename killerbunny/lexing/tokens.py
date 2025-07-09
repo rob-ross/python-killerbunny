@@ -286,7 +286,9 @@ class  Token:
         
     def __testrepr__(self) -> str:
         """Representation of Token for testing purposes. If you change this, you may break unit tests. """
-        if self.token_type.is_literal() or self.token_type.is_identifier():
+        if self.token_type == TokenType.SLICE:
+            string = f"SLICE[{self.value}]"
+        elif self.token_type.is_literal() or self.token_type.is_identifier():
             string = f"{self.token_type}:{self.value}"
         elif self.token_type.is_keyword():
             string =f"{self.token_type.category.name}:{self.value}"

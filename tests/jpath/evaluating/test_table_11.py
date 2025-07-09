@@ -5,15 +5,15 @@
 #  Created by: Robert L. Ross
 #
 
-"""Evaluate comparison expressions defined in Table 11:  "Comparison Examples".
+"""Evaluate comparison expressions defined in Table 11: "Comparison Examples".
 See section 2.3.5.3., pg 30, RFC 9535
-These exmples use the json object defined in rfc9535_examples/example_2.3.5.3.1.json:
+These tests use the JSON object defined in rfc9535_examples/example_2.3.5.3.1.json:
 {
   "obj": {"x": "y"},
   "arr": [2, 3]
 }
-Note that these are not  proper json path query strings; they are comparison-expression grammar productions.
-We must parse the partial query strings using JPathParser.subparse().
+Note that these are not proper JSON path query strings; they are comparison-expression grammar productions.
+We must parse the partial query strings using JPathParser.subparse("comparison_expr").
 """
 from typing import cast
 

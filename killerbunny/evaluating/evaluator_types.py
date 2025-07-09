@@ -74,7 +74,7 @@ class NormalizedJPath:
         match = NORMALIZED_PATH_RE.match(escaped_path)
         if match:
             return escaped_path
-        else: raise ValueError(f"jpath_str: '{jpath_str}' is not in normal format.")
+        else: raise ValueError(f"jpath_str: '{jpath_str}' (escaped: '{escaped_path}') is not in normal format.")
         # todo : to verify that a jpath is well-formed we actualy need to run it through the lexer and parser!
         # this produces an AST, however. So we would need a special evalute method in the Evaluator to construct the
         # jpath and verify it only contains legitimate jpath syntax.

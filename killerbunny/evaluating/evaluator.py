@@ -23,6 +23,7 @@ from killerbunny.evaluating.value_nodes import (
     StringValue
 )
 from killerbunny.parsing.function import Nothing, LogicalType, ValueType, FunctionCallNode, FunctionArgument
+from killerbunny.parsing.helper import unescape_string_content
 from killerbunny.parsing.node_type import ASTNode, ASTNodeType
 from killerbunny.parsing.parser_nodes import (
     JsonPathQueryNode,
@@ -136,12 +137,7 @@ class JPathEvaluator:
         segment_output: VNodeList = input_nodelist  # default, in case there are no segments
         
         segments: RepetitionNode = node.segments
-        if segments.is_empty():
-            # no segments in the absolute query, so allow all input nodes
-            context.set_symbol(JPATH_QUERY_RESULT_NODE_KEY, input_nodelist)
-            return rt_res.success(BooleanValue.value_for(True).set_context(context).set_pos(node.position.copy()))
-            
-        
+       
         for seg_node in segments:
             # creating a new Context provides a local scope for the segment visit
             seg_context = Context("<segment>", context, seg_node.position )
@@ -193,13 +189,14 @@ class JPathEvaluator:
             collected_vnodes.append(cur_node)
             
             # add children to the queue for processing during the next iteration
-            if isinstance(jvalue, JSON_ARRAY_TYPES):
+            if isinstance(jvalue, JSON_ARRAY_TYPES) and not isinstance(jvalue, str):
                 for index, element in enumerate(jvalue):
                     new_node = VNode(NormalizedJPath(f"{jpath}[{index}]"), element,
                                      cur_node.root_value, cur_node.node_depth + 1 )
                     node_queue.append((new_node, depth + 1))
             elif isinstance(jvalue, JSON_OBJECT_TYPES):
-                for name, value in jvalue.items():
+                # noinspection PyUnresolvedReferences
+                for name, value in jvalue.items():  # type: ignore
                     new_node = VNode(NormalizedJPath(f"{jpath}['{name}']"), value,
                                      cur_node.root_value, cur_node.node_depth + 1)
                     node_queue.append((new_node, depth + 1))
@@ -220,7 +217,7 @@ class JPathEvaluator:
         child_nodes: list[VNode] = []
         instance_ids: dict[int, VNode] = {id(parent_node.jvalue):parent_node}
     
-        if isinstance(parent_node.jvalue, JSON_STRUCTURED_TYPES):
+        if isinstance(parent_node.jvalue, JSON_STRUCTURED_TYPES) and not isinstance(parent_node.jvalue, str):
             base_path = parent_node.jpath
             if isinstance(parent_node.jvalue, JSON_ARRAY_TYPES):
                 for index, element in enumerate(parent_node.jvalue):
@@ -364,9 +361,11 @@ class JPathEvaluator:
                 jpath  = input_node.jpath
                 jvalue_dict = input_node.jvalue
                 if node.member_name in jvalue_dict:
+                    # we have to unescape because NormalizedJPath will re-escape the entire path, resulting in a double escaping of the starting path
+                    unescaped_jpath = unescape_string_content(jpath.jpath_str)
                     output_nodelist.append(
-                        VNode( NormalizedJPath(f"{jpath}['{node.member_name}']"), jvalue_dict[ node.member_name ],
-                               input_node.root_value, input_node.node_depth +1 )
+                        VNode( NormalizedJPath(f"{unescaped_jpath}['{node.member_name}']"), jvalue_dict[ node.member_name ],
+                               input_node.root_value, input_node.node_depth + 1 )
                     )
                 
         return rt_res.success(VNodeList(output_nodelist))
@@ -404,7 +403,7 @@ class JPathEvaluator:
         input_node: VNode
         current_slice_obj = node.slice_op
         for input_node in input_nodelist:
-            if not isinstance(input_node.jvalue, JSON_ARRAY_TYPES):
+            if not isinstance(input_node.jvalue, JSON_ARRAY_TYPES) or isinstance(input_node.jvalue, str):
                 continue
             jpath = input_node.jpath
             jvalue_list = input_node.jvalue
@@ -440,7 +439,7 @@ class JPathEvaluator:
         ouput_nodes: list[VNode] = []
         input_node: VNode
         for input_node in input_nodelist:
-            if not isinstance(input_node.jvalue, JSON_ARRAY_TYPES):
+            if not isinstance(input_node.jvalue, JSON_ARRAY_TYPES) or isinstance(input_node.jvalue, str):
                 continue
             jpath = input_node.jpath
             jvalue = input_node.jvalue

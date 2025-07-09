@@ -8,6 +8,7 @@
 """Tests the evaluator with cyclic data. Cycles cannot be (easily?) represented in JSON text but could easily happen
 when generating nested data programmatically. Cycles can be used as an attack vector to crash the evaluator with
 a stack overflow error. """
+import logging
 from typing import Any, cast
 
 import pytest
@@ -16,6 +17,8 @@ from _pytest.logging import LogCaptureFixture
 from killerbunny.evaluating.value_nodes import VNodeList
 from killerbunny.evaluating.well_formed_query import WellFormedValidQuery
 from killerbunny.shared.json_type_defs import JSON_ValueType
+
+_logger = logging.getLogger(__name__)
 
 @pytest.fixture(scope="module", autouse=True)
 def child_dict_cycle() -> JSON_ValueType:
@@ -396,3 +399,38 @@ def test_ds_list_deeply_nested(doubly_nested_cycle: JSON_ValueType, caplog: LogC
         "'shared_list': ['1', '2', '3', {...}], 'cycle': ['a', 'b', 'c', ['1', '2', '3', {...}], {...}]}",
         caplog
     )
+    
+    
+def test_table12_cycle(caplog: LogCaptureFixture) -> None:
+    """Originally this query generated an erroneous Cycle warning due to a bug where str values were being processed
+    as arrays. That bug was fixed, and this test ensures that fix is working correctly for this case."""
+    root_value: dict[str, JSON_ValueType] = {
+        "a": [3, 5, 1, 2, 4, 6,
+              {"b": "j"},
+              {"b": "k"},
+              {"b": {}},
+              {"b": "kilo"}
+              ],
+        "o": {"p": 1, "q": 2, "r": 3, "s": 5, "t": {"u": 6}},
+        "e": "f"
+    }
+    
+    jpath_query_str = '$[?@.*]'
+    query = WellFormedValidQuery.from_str(jpath_query_str)
+    node_list:VNodeList = query.eval(root_value)
+    
+    print(f"\n{str(caplog.records)}")
+    
+    actual_values = list(node_list.values())
+    actual_values_str = f"{actual_values}"
+    actual_paths = [npath.jpath_str for npath in node_list.paths() ]
+    
+    expected_values: list[Any] = [[3, 5, 1, 2, 4, 6, {'b': 'j'}, {'b': 'k'}, {'b': {}}, {'b': 'kilo'}], {'p': 1, 'q': 2, 'r': 3, 's': 5, 't': {'u': 6}}]
+    expected_values_str = "[[3, 5, 1, 2, 4, 6, {'b': 'j'}, {'b': 'k'}, {'b': {}}, {'b': 'kilo'}], {'p': 1, 'q': 2, 'r': 3, 's': 5, 't': {'u': 6}}]"
+    expected_paths: list[Any] = ["$['a']", "$['o']"]
+    
+    assert actual_values_str == expected_values_str
+    assert actual_paths == expected_paths
+    assert actual_values == expected_values
+    
+    assert 0 == len(caplog.records), "No warnings should be generated for this query"

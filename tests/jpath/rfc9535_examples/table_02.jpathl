@@ -1,3 +1,4 @@
+# json_file: figure.1.json
 $.store.book[*].author
 $..author
 $.store.*

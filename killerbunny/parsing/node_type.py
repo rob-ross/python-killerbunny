@@ -55,7 +55,7 @@ class ASTNodeType(Enum):
     MEMBER_NAME_SHORTHAND = "member_name_shorthand", "mns"
     
     FUNCTION              = "function",        "func"
-    FUNCTION_PARAM        = "funciton_param",  "param"
+    FUNCTION_PARAM        = "function_param",  "param"
     FUNC_PARAM_LIST       = "func_param_list", "param_list"
     FUNCTION_CALL         = "function_call",   "func()"
     FUNCTION_ARG          = "function_arg",    "arg"
