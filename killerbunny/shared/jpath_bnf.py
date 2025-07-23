@@ -28,8 +28,8 @@ def pattern_str(pattern: str | Pattern[str]) -> str:
 
 def concat(seq: list[str | Pattern[str]]) -> str:
     """Return a regex pattern str that matches the concatenation of the patterns in the sequence.
-    I.e., foo bar   (foo followed by bar)
-    E.g., calling : concat(['foo', 'bar']) returns the pattern r'(?:(?:foo)(?:bar))'
+    I.e., foo bar (foo followed by bar)
+    E.g., calling : concat(['foo', 'bar']) returns the pattern `r'(?:(?:foo)(?:bar))'`
     """
     patterns: list[str] = []
     for index, item in enumerate(seq):
@@ -40,7 +40,7 @@ def concat(seq: list[str | Pattern[str]]) -> str:
 def alternatives(seq: list[str | Pattern[str]]) -> str:
     """Return a regex pattern str that matches any of the patterns in the sequence.
     I.e., foo | bar
-    E.g., calling : alternatives(['foo', 'bar']) returns the pattern r'(?:(?:foo)|(?:bar))'
+    E.g., calling : alternatives(['foo', 'bar']) returns the pattern `r'(?:(?:foo)|(?:bar))'`
     """
     
     patterns: list[str] = []
@@ -51,16 +51,16 @@ def alternatives(seq: list[str | Pattern[str]]) -> str:
 # noinspection RegExpUnnecesaryNonCapturingGroup
 def plus_rep(pattern: str | Pattern[str]) -> Pattern[str]:
     """Return a regex pattern that matches the '+' variable repetition of the pattern.
-    I.e.,  foo+ ; one or more foo.
-    E.g., plus_rep('foo') returns the pattern r'(?:foo)+'
+    I.e., foo+ - one or more foo.
+    E.g., plus_rep('foo') returns the pattern `r'(?:foo)+'`
     """
     return re.compile(rf'(?:{pattern_str(pattern)})+')
 
 
 def star_rep(pattern: str | Pattern[str]) -> str:
     """Return a regex pattern that matches the '*' variable repetition of the pattern.
-    I.e., foo* ; foo zero or more times.
-    E.g., star_rep('foo') returns the pattern r'(?:foo)*'
+    I.e., foo* - foo zero or more times.
+    E.g., star_rep('foo') returns the pattern `r'(?:foo)*'`
     """
     return rf"(?:{pattern_str(pattern)})*"
 
@@ -68,8 +68,8 @@ def star_rep(pattern: str | Pattern[str]) -> str:
 # noinspection RegExpUnnecessaryNonCapturingGroup
 def n_rep(n:int, pattern: str | Pattern[str]) -> Pattern[str]:
     """Return a regex pattern that matches `pattern` exactly n times.
-    I.e., in ABNF form : 3foo ; foo exactly 3 times
-    E.g., n_rep(2, 'foo') returns the pattern r'(?:foo){2}'
+    I.e., in ABNF form: 3foo - foo exactly 3 times
+    E.g., n_rep(2, 'foo') returns the pattern `r'(?:foo){2}'`
     """
     return re.compile(rf"(?:{pattern_str(pattern)}){JPathBNFConstants.LEFT_BRACE}{n}{JPathBNFConstants.RIGHT_BRACE}")
 
@@ -77,17 +77,17 @@ def n_rep(n:int, pattern: str | Pattern[str]) -> Pattern[str]:
 # noinspection RegExpUnnecessaryNonCapturingGroup,PyShadowingBuiltins
 def min_max_rep(min:int, max:int, pattern: str | Pattern[str]) -> Pattern[str]:
     """Return a regex pattern that matches `pattern` between `min` and `max` times.
-    I.e., in ABNF form : 2*3foo ; at least 2 foo and not more than 3 foo
-    E.g., min_max_rep(2, 3, 'foo') returns the pattern r'(?:foo){2,3}'
+    I.e., in ABNF form: 2*3foo - at least 2 foo and not more than 3 foo
+    E.g., min_max_rep(2, 3, 'foo') returns the pattern` r'(?:foo){2,3}'`
     """
     return re.compile(rf'(?:{pattern_str(pattern)}){JPathBNFConstants.LEFT_BRACE}{min},{max}{JPathBNFConstants.RIGHT_BRACE}')
 
 # noinspection RegExpUnnecessaryNonCapturingGroup
 def optional(pattern: str | Pattern[str]) -> Pattern[str]:
     """Return a regex pattern that matches the optional repetition of the pattern, i.e., zero or one time.
-    I.e., [ foo] ; an optional foo
-       same as :  *1(foo) ; foo zero or one times
-    E.g., optional('foo') returns the pattern r'(?:foo)?'
+    I.e., [ foo] - an optional foo
+       same as: *1(foo) - foo zero or one times
+    E.g., optional('foo') returns the pattern `r'(?:foo)?'`
     """
     return re.compile(rf"(?:{pattern_str(pattern)})?")
 
@@ -152,7 +152,7 @@ class JPathBNFConstants:
     # JSON keywords. But only treated as keywords in certain contexts
     TRUE     = "true"
     FALSE    = "false"
-    # NULL : Note - JSON null is treated the same as any other JSON value, i.e., it is not taken to mean
+    # NULL: Note - JSON null is treated the same as any other JSON value, i.e., it is not taken to mean
     # "undefined" or "missing".
     NULL     = "null"
     
@@ -211,7 +211,7 @@ class JPathBNFConstants:
     INT_MAX =  (2**53) - 1
     INT_MIN = -(2**53) + 1
     
-    # These patterns require non-trivial initialization so they are defined in the _init_grammar_patterns() method
+    # These patterns require non-trivial initialization, so they are defined in the _init_grammar_patterns() method
     NON_SURROGATE: str
     HIGH_SURROGATE: str
     LOW_SURROGATE: str
@@ -249,7 +249,7 @@ class JPathBNFConstants:
     @classmethod
     def _init_grammar_patterns(cls) -> None:
         
-        # Terminals (not strictly terminals but these can be parsed without further recursion)
+        # Terminals (not strictly terminals, but these can be parsed without further recursion)
         
         ####################################################################
         # HEX_CHAR
@@ -286,7 +286,7 @@ class JPathBNFConstants:
         cls.STRING_LITERAL_SINGLE_QUOTEABLE = f"(?P<string_sq>{cls.SINGLE_QUOTED}*)"
         cls.STRING_LITERAL_DQ = f"(?:{cls.DOUBLE_QUOTE}{cls.STRING_LITERAL_DOUBLE_QUOTEABLE}{cls.DOUBLE_QUOTE})"
         cls.STRING_LITERAL_SQ = f"(?:{cls.SINGLE_QUOTE}{cls.STRING_LITERAL_SINGLE_QUOTEABLE}{cls.SINGLE_QUOTE})"
-        # string literals can be quoted as "string" or 'string'
+        # String literals can be quoted as "string" or 'string'
         # STRING_LITERAL and LITERAL are defined here as regex patterns, but they are large and unwieldy and complex.
         # So when trying to match one, it's better to use the component parts instead,
         # i.e., STRING_LITERAL_SQ and STRING_LITERAL_DQ
@@ -370,10 +370,10 @@ class JPathBNFConstants:
         pass
 
 # Example of subclassing to modify regexes.
-# Note, in most cases subclassing  JPathBNFConstants might be a necessary step in modifying behavior
-# of the json path query interpreter, but it's most probably not sufficient. For example, to allow a trailing comma in
-# a selector list would require changes to the parser methods that parse a eelector list. I suspect we'd need
-# to refactor the parser logic a bit to make it easier to support extending behavior like this. If the need arises we
+# Note, in most cases subclassing JPathBNFConstants might be a necessary step in modifying the behavior
+# of the JSON path query interpreter, but it's most probably not sufficient. For example, to allow a trailing comma in
+# a selector list would require changes to the parser methods that parse a selector list. I suspect we'd need
+# to refactor the parser logic a bit to make it easier to support extending behavior like this. If the need arises, we
 # can certainly revist this. But for now, it's out of scope for the task of creating an RFC 9535 compliant JSON Path
 # interpreter.
 class _RelaxedJPathBNF(JPathBNFConstants):
@@ -382,18 +382,18 @@ class _RelaxedJPathBNF(JPathBNFConstants):
     # Original JPathBNFConstants.INT uses "-?"
     # Let's say we want to allow "+" as well for integers.
     # We need to identify which base component contributes to the sign.
-    # JPathBNFConstants.INT = f'(?:0|-?{JPathBNFConstants.DIGIT1_CHAR_SET}{JPathBNFConstants.DIGIT_CHAR_SET}*)'
+    # JPathBNFConstants.INT = `f'(?:0|-?{JPathBNFConstants.DIGIT1_CHAR_SET}{JPathBNFConstants.DIGIT_CHAR_SET}*)'`
     # We can redefine the whole INT pattern:
     INT = f'(?:0|[-+]?{JPathBNFConstants.DIGIT1_CHAR_SET}{JPathBNFConstants.DIGIT_CHAR_SET}*)'
     
-    # Another example : allow trailing commas in bracketed selection lists
-    # this is currently enforced in the parser's bracketed_selection() method, where it returns a parse error on
-    # trailing commas. we would have to subclass the parser and override bracketed_selection() to enable this new
-    # feature. Or perhaps we could push more of these grammar definitions into the the  JPathBNFConstants, and have the
+    # Another example: allow trailing commas in bracketed selection lists.
+    # This is currently enforced in the parser's bracketed_selection() method, where it returns a parse error on
+    # trailing commas. We would have to subclass the parser and override bracketed_selection() to enable this new
+    # feature. Or perhaps we could push more of these grammar definitions into the JPathBNFConstants and have the
     # Lexer optimize the token stream by accepting the trailing comma but removing that token before the parser
     # gets the list of tokens.
     
-# initialize instances
+# Initialize the instances
 # these inits are needed to initialize the constants defined in _init_grammar_patterns(). Once intiialzed, the
 # constants can be accesed as normal via JPathBNFConstants.foo expressions.
 JPathBNFConstants.instance()
