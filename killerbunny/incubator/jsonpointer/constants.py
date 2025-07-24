@@ -1,6 +1,4 @@
 import re
-from types import NoneType
-from typing import TypeAlias, Union
 
 JSON_FILE_SUFFIX = ".json"
 PATH_VALUES_SUFFIX = ".path_values"
