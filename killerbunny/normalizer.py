@@ -16,7 +16,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import cast, Callable
 
-from common.screen_utils import display_list_elements
 
 from killerbunny.incubator.jsonpointer.constants import PATH_VALUE_SEPARATOR, ONE_MEBIBYTE, JPATH_VALUES_SUFFIX
 from killerbunny.incubator.jsonpointer.pretty_printer import FormatFlags, format_scalar, pretty_print
@@ -292,11 +291,11 @@ def t_2() -> None:
     json_value = load_obj_from_json_file(file1)
     lines = label_all_nodes_normal_form_depth_first(json_value, [], FormatFlags().as_json_format().with_single_line(True), "", 0)
     lines = add_shorthand_notation(lines)
-    display_list_elements(lines,single_line=False, quote=False)
+    #display_list_elements(lines,single_line=False, quote=False)
     lines = add_double_quoted_versions(lines)
     print()
     lines = lexcercise(lines)
-    display_list_elements(lines,single_line=False, quote=False)
+    #display_list_elements(lines,single_line=False, quote=False)
 
 def main() -> None:
     print(os.getcwd())
