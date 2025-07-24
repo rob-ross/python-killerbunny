@@ -33,7 +33,7 @@ def path_values_data(json_files_dir_fixture:Path = JSON_FILES_DIR):
         if not test_parameters_path.exists():
             raise FileNotFoundError(f"Test parameters file not found: {file_stem}{PATH_VALUES_SUFFIX}")
 
-        # print(f"Loading json_obj from: {json_obj_path}")
+        # print(f"Loading value from: {json_obj_path}")
         # print(f"Loading parameter data from: {test_parameters_path}")
         json_obj  = load_obj_from_json_file(json_obj_path)
         parameter_data = load_path_values(test_parameters_path)
@@ -43,12 +43,12 @@ def path_values_data(json_files_dir_fixture:Path = JSON_FILES_DIR):
 
 
 
-@pytest.mark.parametrize("filename, json_obj, path, expected_value", path_values_data())
-def test_resolve_json_pointer(filename, json_obj, path, expected_value):
+@pytest.mark.parametrize("filename, value, path, expected_value", path_values_data())
+def test_resolve_json_pointer(filename, value, path, expected_value):
     """Test resolve_json_pointer() with data from .path_values.txt files."""
     #print(f"\ntest_resolve_json_pointer called for file: {filename}, path: {path}")
 
-    actual_value = resolve_json_pointer(json_obj, path)
+    actual_value = resolve_json_pointer(value, path)
     assert actual_value == expected_value, f"{actual_value=}\n{expected_value=}"
 
 
@@ -79,9 +79,9 @@ def test_resolve_bad_paths(path, expected_exception_type, expected_exception_mes
     assert expected_exception_message in str(exc_info.value)
 
 
-@pytest.mark.parametrize("filename, json_obj, path, expected_value", path_values_data())
-def test_validate(filename, json_obj, path, expected_value) -> None:
-    assert validate(json_obj, path) == True
+@pytest.mark.parametrize("filename, value, path, expected_value", path_values_data())
+def test_validate(filename, value, path, expected_value) -> None:
+    assert validate(value, path) == True
 
 
 @pytest.mark.parametrize("path, expected_exception_type, expected_exception_message", bad_path_values_data)

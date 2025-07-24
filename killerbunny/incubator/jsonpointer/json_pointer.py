@@ -2,8 +2,9 @@
 import re
 from typing import Any
 
-from killerbunny.incubator.jsonpointer.constants import JSON_VALUES, _ESCAPED_SOLIDUS, \
-    _ESCAPED_TILDE, _TOKEN_SEPARATOR, EMPTY_STRING, END_OF_ARRAY_TOKEN, _ARRAY_INDEX_RE, SCALAR_TYPES
+from killerbunny.incubator.jsonpointer.constants import _ESCAPED_SOLIDUS, \
+    _ESCAPED_TILDE, _TOKEN_SEPARATOR, EMPTY_STRING, END_OF_ARRAY_TOKEN, _ARRAY_INDEX_RE
+from killerbunny.shared.json_type_defs import JSON_PRIMITIVE_TYPES, JSON_ValueType
 
 """
 To represent a json object as a string, you must escape the json dict_ - specifically the strings in the json dict_
@@ -13,7 +14,7 @@ which is a string representing a json dict_/python dict
 """
 
 
-def validate(json_obj: JSON_VALUES, pointer_str: str, ) -> bool:
+def validate(json_obj: JSON_ValueType, pointer_str: str, ) -> bool:
     """Return True if valid JSON Pointer str, otherwise return False
 
     It turns out, you cannot pre-validate a pointer. Its correctness is context-sensitive. It depends on the object
@@ -64,7 +65,7 @@ LENIENT - don't throw exceptions but return None instead
 DEV - return  falsie elements "", 0, [], or {}  
 """
 
-def resolve_json_pointer(json_obj: JSON_VALUES, path: str) -> Any:
+def resolve_json_pointer(json_obj: JSON_ValueType, path: str) -> Any:
     """Return the value referenced by the json_pointer path."""
     if path == EMPTY_STRING:
         return json_obj
@@ -114,7 +115,7 @@ def resolve_json_pointer(json_obj: JSON_VALUES, path: str) -> Any:
                     raise ValueError(f"Invalid list index type:{type(unesc_path).__name__} in path "
                                      f"'{subpath(ref_tokens,index)}'") from None
 
-        elif isinstance(cur_node, SCALAR_TYPES):
+        elif isinstance(cur_node, JSON_PRIMITIVE_TYPES):
             # terminal node, should align with end of path
             # todo error handling if more path components left to process
             if index != last_path_index:
@@ -122,7 +123,7 @@ def resolve_json_pointer(json_obj: JSON_VALUES, path: str) -> Any:
         else:
             raise TypeError(f"Encountered non JSON type: {type(cur_node)}")
         #print(f"index is {index} and {unesc_path=}, {cur_node=}")
-        if isinstance(cur_node, SCALAR_TYPES) and index != last_path_index:
+        if isinstance(cur_node, JSON_PRIMITIVE_TYPES) and index != last_path_index:
             #print(f"*********** TERMINAL NODE REACHED, BUT PATH CONTINUES *****")
             raise ValueError(f"Invalid path reference '{subpath(ref_tokens,index+1)}', last good value: '{cur_node}' "
                              f"for path '{subpath(ref_tokens,index)}'")

@@ -17,13 +17,13 @@ from pathlib import Path
 from typing import cast, Callable
 
 from common.screen_utils import display_list_elements
+
+from killerbunny.incubator.jsonpointer.constants import PATH_VALUE_SEPARATOR, ONE_MEBIBYTE, JPATH_VALUES_SUFFIX
+from killerbunny.incubator.jsonpointer.pretty_printer import FormatFlags, format_scalar, pretty_print
+from killerbunny.lexing.lexer import JPathLexer
+from killerbunny.shared.jpath_bnf import JPathBNFConstants
 from killerbunny.shared.json_type_defs import JSON_ValueType, JSON_PRIMITIVE_TYPES, JSON_ARRAY_TYPES, \
     JSON_OBJECT_TYPES
-from killerbunny.lexing.lexer import JPathLexer
-from killerbunny.incubator.jsonpointer.constants import SCALAR_TYPES, PATH_VALUE_SEPARATOR, ONE_MEBIBYTE, JPATH_VALUES_SUFFIX
-from killerbunny.shared.jpath_bnf import JPathBNFConstants
-from killerbunny.incubator.jsonpointer.pretty_printer import FormatFlags, format_scalar, pretty_print
-
 
 
 @dataclass
@@ -87,7 +87,7 @@ def label_all_nodes_normal_form_depth_first(json_value: JSON_ValueType,
     as  str : str pairs, separated by _SEPARATOR..
     Left str is the normalized JSON Path, right str is the serialzed JSON value to which that path refers.
     """
-    if isinstance(json_value, SCALAR_TYPES):
+    if isinstance(json_value, JSON_PRIMITIVE_TYPES):
         # these are terminals, so add path and  value
         element_list.append(
             f'{root_path}{PATH_VALUE_SEPARATOR}{format_scalar(json_value, format_)}\n')
@@ -236,7 +236,7 @@ def resolve_json_path(json_value: JSON_ValueType, normalized_jpath: str) -> tupl
                 # raise ... from None prevents chaining the ValueError from the int(unsec_path), which we are handling here
                 raise ValueError(f"Invalid list index type:{type(segment_part).__name__} in path "
                                  f"'{subpath(segment_parts,index)}'") from None
-        elif isinstance(cur_node, SCALAR_TYPES):
+        elif isinstance(cur_node, JSON_PRIMITIVE_TYPES):
             # terminal node, should align with end of path
             # todo error handling if more path components left to process
             if index != last_path_index:
@@ -244,7 +244,7 @@ def resolve_json_path(json_value: JSON_ValueType, normalized_jpath: str) -> tupl
         else:
             raise TypeError(f"Encountered non JSON type: {type(cur_node)}")
         
-        if isinstance(cur_node, SCALAR_TYPES) and index != last_path_index:
+        if isinstance(cur_node, JSON_PRIMITIVE_TYPES) and index != last_path_index:
             #print(f"*********** TERMINAL NODE REACHED, BUT PATH CONTINUES *****")
             raise ValueError(f"Invalid path reference '{subpath(segment_parts,index+1)}', last good value: '{cur_node}' "
                              f"for path '{subpath(segment_parts,index)}'")

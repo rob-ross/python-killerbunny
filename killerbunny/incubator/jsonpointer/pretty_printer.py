@@ -1,9 +1,10 @@
 import logging
 from typing import NamedTuple
 
-from killerbunny.incubator.jsonpointer.constants import JSON_SCALARS, SCALAR_TYPES, JSON_VALUES, OPEN_BRACE, \
+from killerbunny.incubator.jsonpointer.constants import OPEN_BRACE, \
     CLOSE_BRACE, \
     SPACE, COMMA, EMPTY_STRING, CLOSE_BRACKET, OPEN_BRACKET
+from killerbunny.shared.json_type_defs import JSON_PRIMITIVE_TYPES, JSON_PrimitiveType, JSON_ValueType
 
 _logger = logging.getLogger(__name__)
 
@@ -75,7 +76,7 @@ class FormatFlags(NamedTuple):
                            single_line=self.single_line, omit_commas=omit_commas)
 
 
-def format_scalar(scalar_obj: JSON_SCALARS, format_: FormatFlags) -> str:
+def format_scalar(scalar_obj: JSON_PrimitiveType, format_: FormatFlags) -> str:
     """Format the scalar_obj according to the Format flags.
     If the scalar_obj is None, return None. Return "null" if format_.format_json is True
     If the scalar_obj is a bool, return True/False, Return "true"/"false" if format_.format_json is True
@@ -131,7 +132,7 @@ def _spacer(format_: FormatFlags, level: int) -> str:
         return SPACE
     return SPACE * ( format_.indent * level )
 
-def _is_empty_or_single_item(obj: JSON_VALUES ) -> bool:
+def _is_empty_or_single_item(obj: JSON_ValueType ) -> bool:
     """Recurse the list or dict and return True if every nested element is either empty or contains
     exactly one scalar list element or one key/value pair where the value is a single scalar value.
     Another way to think of this is, if the structure does not require a comma, this method will return True
@@ -145,7 +146,7 @@ def _is_empty_or_single_item(obj: JSON_VALUES ) -> bool:
     { "key": [ [ { "one":"foo", "two":"bar" } ] ] } - returns False
     """
     #base case:
-    if isinstance(obj, SCALAR_TYPES):
+    if isinstance(obj, JSON_PRIMITIVE_TYPES):
         return True
     if isinstance(obj, (list, dict)) and len(obj) == 0:
         return True
@@ -160,11 +161,11 @@ def _is_empty_or_single_item(obj: JSON_VALUES ) -> bool:
 
 
 # noinspection DuplicatedCode
-def _pp_dict(json_dict: dict[str, JSON_VALUES],
+def _pp_dict(json_dict: dict[str, JSON_ValueType],
              format_: FormatFlags,
              lines: list[str],
              level: int = 0,
-             instance_ids: dict[int, JSON_VALUES] | None = None,
+             instance_ids: dict[int, JSON_ValueType] | None = None,
              ) -> list[str]:
     
     if not isinstance(json_dict, dict):
@@ -196,7 +197,7 @@ def _pp_dict(json_dict: dict[str, JSON_VALUES],
         return lines
     if len(json_dict) == 1:
         k, v = next(iter(json_dict.items()))
-        if isinstance(v, SCALAR_TYPES):
+        if isinstance(v, JSON_PRIMITIVE_TYPES):
             kf = format_scalar(k, format_)
             vf = format_scalar(v, format_)
             lines[-1] += f"{indent_str}{OPEN_BRACE}{SPACE}{kf}:{SPACE}{vf}{SPACE}{CLOSE_BRACE}"
@@ -216,7 +217,7 @@ def _pp_dict(json_dict: dict[str, JSON_VALUES],
         last_item:  bool = (index == (len(json_dict) - 1 ))  # no comma after the last item
 
         kf = format_scalar(key, format_)  # formatted key
-        if isinstance(value, SCALAR_TYPES):
+        if isinstance(value, JSON_PRIMITIVE_TYPES):
             lines.append("")
             vf = format_scalar(value, format_)
             lines[-1] = f"{indent_str}{kf}:{SPACE}{vf}"
@@ -244,7 +245,7 @@ def _pp_dict(json_dict: dict[str, JSON_VALUES],
                 lines.append("")
             elif len(value) == 1:
                 nk, nv = next(iter(value.items()))
-                if not isinstance(nv, SCALAR_TYPES):
+                if not isinstance(nv, JSON_PRIMITIVE_TYPES):
                     lines.append("")
             _pp_dict(value, format_, lines, level, instance_ids)
 
@@ -264,11 +265,11 @@ def _pp_dict(json_dict: dict[str, JSON_VALUES],
     return lines
 
 # noinspection DuplicatedCode
-def _pp_list(json_list: list[JSON_VALUES],
+def _pp_list(json_list: list[JSON_ValueType],
              format_: FormatFlags,
              lines: list[str],
              level: int = 0,
-             instance_ids: dict[int, JSON_VALUES] | None = None,
+             instance_ids: dict[int, JSON_ValueType] | None = None,
              ) -> list[str]:
 
     if not isinstance(json_list, list):
@@ -300,7 +301,7 @@ def _pp_list(json_list: list[JSON_VALUES],
     if len(json_list) == 0:
         lines[-1] += f"{indent_str}{OPEN_BRACKET}{SPACE}{CLOSE_BRACKET}"
         return lines
-    if len(json_list) == 1 and isinstance(json_list[0], SCALAR_TYPES):
+    if len(json_list) == 1 and isinstance(json_list[0], JSON_PRIMITIVE_TYPES):
         s = format_scalar(json_list[0], format_)
         lines[-1] += f"{indent_str}{OPEN_BRACKET}{SPACE}{s}{SPACE}{CLOSE_BRACKET}"
         return lines
@@ -316,7 +317,7 @@ def _pp_list(json_list: list[JSON_VALUES],
         first_item: bool = (index == 0)
         last_item:  bool = (index == (len(json_list) - 1 ))  # no comma after the last element
 
-        if isinstance(item, SCALAR_TYPES):
+        if isinstance(item, JSON_PRIMITIVE_TYPES):
             lines.append("")
             s = format_scalar(item, format_)
             lines[-1] = f"{indent_str}{s}"
@@ -342,7 +343,7 @@ def _pp_list(json_list: list[JSON_VALUES],
 
     return lines
 
-def pretty_print(json_obj: JSON_VALUES,
+def pretty_print(value: JSON_ValueType,
                  format_: FormatFlags,
                  lines: list[str] | None = None,
                  indent_level: int = 0,
@@ -358,16 +359,16 @@ def pretty_print(json_obj: JSON_VALUES,
     if lines is None or len(lines) == 0:
         lines = [""]   # so format methods will have a new starting line for output
     
-    instance_ids: dict[int, JSON_VALUES] = {}  # keeps track of instance ids to detect circular references
+    instance_ids: dict[int, JSON_ValueType] = {}  # keeps track of instance ids to detect circular references
     
-    if isinstance(json_obj, SCALAR_TYPES):
-        lines[-1] = format_scalar(json_obj, format_)
-    elif isinstance(json_obj, list):
-        _pp_list(json_obj, format_, lines, indent_level, instance_ids)
-    elif isinstance(json_obj, dict):
-        _pp_dict(json_obj, format_, lines, indent_level, instance_ids)
+    if isinstance(value, JSON_PRIMITIVE_TYPES):
+        lines[-1] = format_scalar(value, format_)
+    elif isinstance(value, list):
+        _pp_list(value, format_, lines, indent_level, instance_ids)
+    elif isinstance(value, dict):
+        _pp_dict(value, format_, lines, indent_level, instance_ids)
     else:
-        raise ValueError(f"Unsupported type: {type(json_obj)}")
+        raise ValueError(f"Unsupported type: {type(value)}")
 
     if format_.single_line:
         return "".join(lines)

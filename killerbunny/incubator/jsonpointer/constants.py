@@ -16,9 +16,6 @@ _QUOTATION_MARK: str =  chr(0x22)  # double quotes '"'
 _CONTROL_CHARS: set[str]  = { chr(cntl) for cntl in range(0x00, 0x20) }
 _ESCAPE_REQUIRED: set[str] = set().union(_REVERSE_SOLIDUS, _QUOTATION_MARK, *_CONTROL_CHARS)
 
-SCALAR_TYPES = (str, bool, int, float, NoneType)
-JSON_SCALARS: TypeAlias = Union[None, str, int, float, bool]
-JSON_VALUES:  TypeAlias = Union[JSON_SCALARS, dict[str, "JSON_VALUES"], list["JSON_VALUES"]]
 
 _ESCAPE_CHAR = _REVERSE_SOLIDUS
 _ESCAPED_REVERSE_SOLIDUS = _ESCAPE_CHAR + _REVERSE_SOLIDUS

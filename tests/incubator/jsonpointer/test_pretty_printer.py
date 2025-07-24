@@ -1,11 +1,12 @@
 
 import unittest
 
-from killerbunny.incubator.jsonpointer.constants import JSON_VALUES
 # noinspection PyProtectedMember
 from killerbunny.incubator.jsonpointer.pretty_printer import FormatFlags, format_scalar, _spacer, \
     _is_empty_or_single_item, _pp_list, \
     _pp_dict, pretty_print
+from killerbunny.shared.json_type_defs import JSON_ValueType
+
 
 # unittest uses (expected, actual) in asserts whereas pytest uses (actual, expected) to my eternal confusion
 
@@ -168,7 +169,7 @@ class TestPPDict(unittest.TestCase):
         self.assertEqual(['{', '  key: { subkey: subvalue } }'], lines)
 
     def test_complex_dict(self) -> None:
-        data: dict[str, JSON_VALUES] = {
+        data: dict[str, JSON_ValueType] = {
             "key1": "value1",
             "key2": ["item1", "item2"],
             "key3": {"subkey1": "subvalue1", "subkey2": "subvalue2"},
@@ -335,7 +336,7 @@ class TestPPList(unittest.TestCase):
         self.assertEqual(expected, lines)
 
     def test_complex_list(self) -> None:
-        data: list[JSON_VALUES] = [
+        data: list[JSON_ValueType] = [
             1,
             [2, 3],
             {"key1": "value1", "key2": "value2"},
@@ -478,7 +479,7 @@ class TestPrettyPrint(unittest.TestCase):
         self.assertEqual( actual, expected )
 
     def test_complex(self) -> None:
-        data: dict[str, JSON_VALUES] = {
+        data: dict[str, JSON_ValueType] = {
             "key1": "value1",
             "key2": [1, 2, 3],
             "key3": {"subkey1": "subvalue1", "subkey2": "subvalue2"}
@@ -488,7 +489,7 @@ class TestPrettyPrint(unittest.TestCase):
         self.assertEqual(actual, expected)
 
     def test_complex_single_line(self) -> None:
-        data: dict[str, JSON_VALUES] = {
+        data: dict[str, JSON_ValueType] = {
             "key1": "value1",
             "key2": [1, 2, 3],
             "key3": {"subkey1": "subvalue1", "subkey2": "subvalue2"}

@@ -10,10 +10,12 @@ import logging
 from pathlib import Path
 from typing import Any, NamedTuple, cast
 
-from killerbunny.incubator.jsonpointer.constants import ONE_MEBIBYTE, UTF8, PATH_VALUE_SEPARATOR, ROOT_PATH_DISPLAY_STR, EMPTY_STRING, \
-    SCALAR_TYPES, PATH_VALUES_SUFFIX, JSON_FILE_SUFFIX, JSON_VALUES
+from killerbunny.incubator.jsonpointer.constants import ONE_MEBIBYTE, UTF8, PATH_VALUE_SEPARATOR, ROOT_PATH_DISPLAY_STR, \
+    EMPTY_STRING, \
+    PATH_VALUES_SUFFIX, JSON_FILE_SUFFIX
 from killerbunny.incubator.jsonpointer.json_pointer import escape_ref_token
 from killerbunny.incubator.jsonpointer.pretty_printer import pretty_print, FormatFlags, format_scalar
+from killerbunny.shared.json_type_defs import JSON_PRIMITIVE_TYPES, JSON_ValueType
 
 TEST_DIR = Path(__file__).parent
 JSON_FILES_DIR = TEST_DIR / "incubator/jsonpointer/json_files"
@@ -21,12 +23,12 @@ JSON_FILES_DIR = TEST_DIR / "incubator/jsonpointer/json_files"
 _logger = logging.getLogger(__name__)
 
 
-def load_obj_from_json_file(input_file: Path) -> JSON_VALUES:
+def load_obj_from_json_file(input_file: Path) -> JSON_ValueType:
     """Return the  json object from the json file in the argument.
     Intended for a json file with a single object for testing and debugging. """
     with open(input_file, "rb", buffering=ONE_MEBIBYTE) as in_file:
         json_str = in_file.read()
-        return cast(JSON_VALUES, json.loads(json_str))
+        return cast(JSON_ValueType, json.loads(json_str))
 
 
 class PathValues(NamedTuple):
@@ -35,7 +37,7 @@ class PathValues(NamedTuple):
     # during testing
     value: Any
 
-def label_all_nodes(obj: JSON_VALUES,
+def label_all_nodes(obj: JSON_ValueType,
                     element_list: list[Any],
                     format_: FormatFlags,
                     root_path: str = "",
@@ -43,7 +45,7 @@ def label_all_nodes(obj: JSON_VALUES,
                     ) -> Any:
     """Depth first traversal of json object in argument, create a JSON Pointer path for each element and return all paths
     as a str"""
-    if isinstance(obj, SCALAR_TYPES):
+    if isinstance(obj, JSON_PRIMITIVE_TYPES):
         # these are terminals, so add path and  value
         element_list.append(
             f'{root_path}{PATH_VALUE_SEPARATOR}{format_scalar(obj, format_)}\n')
