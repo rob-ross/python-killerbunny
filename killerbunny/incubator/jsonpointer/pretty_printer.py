@@ -3,7 +3,7 @@ from typing import NamedTuple
 
 from killerbunny.incubator.jsonpointer.constants import OPEN_BRACE, \
     CLOSE_BRACE, \
-    SPACE, COMMA, EMPTY_STRING, CLOSE_BRACKET, OPEN_BRACKET
+    SPACE, COMMA, EMPTY_STRING, CLOSE_BRACKET, OPEN_BRACKET, COLON
 from killerbunny.shared.json_type_defs import JSON_PRIMITIVE_TYPES, JSON_PrimitiveType, JSON_ValueType
 
 _logger = logging.getLogger(__name__)
@@ -200,7 +200,7 @@ def _pp_dict(json_dict: dict[str, JSON_ValueType],
         if isinstance(v, JSON_PRIMITIVE_TYPES):
             kf = format_scalar(k, format_)
             vf = format_scalar(v, format_)
-            lines[-1] += f"{indent_str}{OPEN_BRACE}{SPACE}{kf}:{SPACE}{vf}{SPACE}{CLOSE_BRACE}"
+            lines[-1] += f"{indent_str}{OPEN_BRACE}{SPACE}{kf}{COLON}{SPACE}{vf}{SPACE}{CLOSE_BRACE}"
             return lines
 
     comma = EMPTY_STRING if format_.omit_commas else COMMA
@@ -280,7 +280,7 @@ def _pp_list(json_list: list[JSON_ValueType],
 
     if lines[-1] != EMPTY_STRING:
         # the current line already has text, so indent is relative to the end of that text
-        indent_str = SPACE * ( format_.indent - 1)
+        indent_str = SPACE
     elif len(lines) == 1 or level == 0:
         indent_str = EMPTY_STRING
     else:
