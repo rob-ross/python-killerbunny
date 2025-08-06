@@ -43,7 +43,7 @@ from killerbunny.shared.json_type_defs import JSON_ValueType
 @dataclass(frozen=True, slots=True)
 class CTSTestData:
     """Holds a single test case from a `cts` JSON file, and maps domain names from the test file domain to the domain names in
-    RFC 9535. We also abstract away the distinciton between a single test result and multiple test results for a single
+    RFC 9535. We also abstract away the distinction between a single test result and multiple test results for a single
     test case by just implementing a results_values and results_paths list. Test cases with a single result and path
     are represented as a single element results_values/paths list."""
     test_name    : str
