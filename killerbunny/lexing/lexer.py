@@ -120,7 +120,7 @@ class JPathLexer:
         
         string = match.group(0)
         if string in JSON_KEYWORD_LEXEMES_SET:
-            # potentially a keyword. Parser can decide if it's a keyword or identifier in context
+            # Potentially a keyword. Parser can decide if it's a keyword or identifier in context
             token_type = TOKEN_LOOKUP_DICT[string]
             self.advance_token(token_type, string)
         else:
@@ -192,7 +192,7 @@ class JPathLexer:
                 spaces = match.group(0)  # type: ignore
                 token = self.make_token(TokenType.SPACE, spaces)
                 #self.tokens.append(token)  # commentted out to consume all whitespace
-                self.advance(token)  # advance without creating a token, i.e. eat the whitespace
+                self.advance(token)  # advance without creating a token, i.e., eat the whitespace
                 
             # multiple char tokens first. Need to peek at next character
             elif self.peek_next_chars(2) in TWO_CHAR_LEXEMES_SET:
