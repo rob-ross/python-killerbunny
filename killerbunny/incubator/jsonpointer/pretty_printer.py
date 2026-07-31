@@ -19,7 +19,7 @@ class FormatFlags(NamedTuple):
     """
     quote_strings: bool = False  # when True wrap strings in quotes, when False omits quotes
     single_quotes: bool = False  # when True use single quotes instead of double quotes
-    use_repr:      bool = False  # when True format strings with str() instead of repr()
+    use_repr:      bool = False  # when True format strings with repr() instead of str() 
     format_json:   bool = False  # when True use "null" for "None" and "true" and "false" for True and False
     indent:        int = 2       # number of spaces to indent each level of nesting
     
